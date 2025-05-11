@@ -1,0 +1,1 @@
+export { MyAnswersPage } from './myAnswers';

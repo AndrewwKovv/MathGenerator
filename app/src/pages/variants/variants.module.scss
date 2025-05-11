@@ -1,0 +1,109 @@
+.wrapper {
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.carousel {
+  margin-bottom: 20px;
+
+  .card {
+    display: flex !important; 
+    justify-content: center;
+    align-items: center;
+    max-width: 224px !important;
+    height: 150px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    position: relative; /* Для центрирования кнопки */
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 59%;
+      height: 1px;
+      background-color: #ccc; // светло-серая линия
+    }
+
+    &::before {
+      left: 0;
+      transform: rotate(30deg);
+      transform-origin: top left;
+      top: 10px;
+    }
+
+    &::after {
+      right: 0;
+      transform: rotate(-30deg);
+      transform-origin: top right;
+      top: 10px;
+    }
+
+    h3 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+
+  .addButton {
+    width: 50px; /* Размер кнопки */
+    height: 50px; /* Размер кнопки */
+    border-radius: 50%; /* Делает кнопку круглой */
+    background-color: #3b5bbb; /* Синий фон */
+    color: #fff; /* Белый текст */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    position: relative; 
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #2a4488; /* Темно-синий фон при наведении */
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 91, 187, 0.5); /* Обводка при фокусе */
+    }
+  }
+}
+
+.divider {
+  height: 2px;
+  background: #ccc;
+  margin: 20px 0;
+}
+
+.tasksCarousel {
+  .taskCard {
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    h3 {
+      margin: 0 0 10px;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}

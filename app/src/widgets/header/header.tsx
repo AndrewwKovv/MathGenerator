@@ -1,5 +1,5 @@
 import { type FC, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 
 import { Container, Logo, Button } from 'shared/components';
@@ -10,7 +10,6 @@ import styles from './header.module.scss';
 
 export const Header: FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Состояние для выпадающего меню
 
@@ -31,6 +30,9 @@ export const Header: FC = () => {
           <Link to={PATHS.ABOUT}>
             <Button className={styles.aboutButton}>О программе</Button>
           </Link>
+          <Link to={PATHS.GET_VARIANT}>
+            <Button className={styles.variantsButton}>Получить вариант</Button>
+          </Link>
         </div>
         <div className={styles.auth}>
           {user ? (
@@ -43,7 +45,7 @@ export const Header: FC = () => {
                   <Link to={PATHS.HOME} className={styles.dropdownItem}>
                     Настройки
                   </Link>
-                  <Link to={PATHS.STUDENT} className={styles.dropdownItem}>
+                  <Link to={PATHS.MY_ANSWERS} className={styles.dropdownItem}>
                     Мои решения
                   </Link>
                   <button

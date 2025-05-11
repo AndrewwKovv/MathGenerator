@@ -1,0 +1,1 @@
+export { GetVariantPage } from './getVariant';

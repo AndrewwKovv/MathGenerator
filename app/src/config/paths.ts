@@ -9,5 +9,7 @@ export const PATHS = {
   LOGIN: '/login',
   QR: '/qr',
   REGISTER: '/register',
+  MY_ANSWERS: '/my-answers',
+  GET_VARIANT: '/get-variant',
   TASKS: '/tasks'
 } as const;

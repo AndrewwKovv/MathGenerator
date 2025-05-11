@@ -23,3 +23,29 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+
+# Исключить виртуальную среду
+env/
+venv/
+
+# Исключить кеши Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Исключить файлы конфигурации IDE
+.idea/
+.vscode/
+
+# Исключить логи и временные файлы
+*.log
+*.tmp
+*.swp
+
+# Исключить файлы базы данных SQLite
+db.sqlite3
+
+# Исключить миграции, если они не нужны
+**/migrations/*.py
+!**/migrations/__init__.py
