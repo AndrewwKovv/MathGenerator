@@ -27,11 +27,22 @@ export const Header: FC = () => {
       <Container className={styles.container}>
         <div className={styles.left}>
           <Logo />
+          {user?.role === 'teacher' ? (
+            <>
+              <Link to={PATHS.THEMES}>
+                <Button className={styles.themesButton}>Темы</Button>
+              </Link>
+              <Link to={PATHS.TASK}>
+                <Button className={styles.tasksButton}>Задания</Button>
+              </Link>
+            </>
+          ) : (
+            <Link to={PATHS.GET_VARIANT}>
+              <Button className={styles.variantsButton}>Получить вариант</Button>
+            </Link>
+          )}
           <Link to={PATHS.ABOUT}>
             <Button className={styles.aboutButton}>О программе</Button>
-          </Link>
-          <Link to={PATHS.GET_VARIANT}>
-            <Button className={styles.variantsButton}>Получить вариант</Button>
           </Link>
         </div>
         <div className={styles.auth}>
@@ -45,9 +56,11 @@ export const Header: FC = () => {
                   <Link to={PATHS.HOME} className={styles.dropdownItem}>
                     Настройки
                   </Link>
-                  <Link to={PATHS.MY_ANSWERS} className={styles.dropdownItem}>
-                    Мои решения
-                  </Link>
+                  {user.role !== 'teacher' && (
+                    <Link to={PATHS.MY_ANSWERS} className={styles.dropdownItem}>
+                      Мои решения
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={handleLogout}

@@ -17,18 +17,19 @@
     max-width: 224px !important;
     height: 150px;
     background: #f0f0f0;
-    border: 1px solid #ccc;
+    border: 1px solid gray;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
-    position: relative; /* Для центрирования кнопки */
+    position: relative;
+    transition: box-shadow 0.3s ease;
 
     &::before,
     &::after {
       content: '';
       position: absolute;
       top: 0;
-      width: 59%;
+      width: 58%;
       height: 1px;
       background-color: #ccc; // светло-серая линия
     }
@@ -54,6 +55,11 @@
     p {
       margin: 0;
       font-size: 14px;
+    }
+
+    &.activeCard {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: #3b5bbb;
     }
   }
 
@@ -83,6 +89,15 @@
       box-shadow: 0 0 0 3px rgba(59, 91, 187, 0.5); /* Обводка при фокусе */
     }
   }
+}
+
+.cart__title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 60px;
+    gap: 5px;
+    z-index: 99;
 }
 
 .divider {

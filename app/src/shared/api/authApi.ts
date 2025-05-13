@@ -7,13 +7,22 @@ export const api = axios.create({
   }
 });
 
+// Интерсептор для добавления токена авторизации
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`; // Добавляем токен в заголовок Authorization
+  }
+  return config;
+});
+
 export const login = async (email: string, password: string) => {
   const response = await api.post('auth/login/', { email, password }); // Отправляем email вместо username
   return response.data;
 };
 
 export const getUser = async (token: string) => {
-  const response = await api.get('auth/', {
+  const response = await api.get('auth/account/', {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;

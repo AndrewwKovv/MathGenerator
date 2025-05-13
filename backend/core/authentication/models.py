@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Permission
 from group.models import Group
-from answer.models import Answer
 from generatedTask.models import GeneratedTask
 from userTaskStatus.models import TaskStatus
 
@@ -19,11 +18,35 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(verbose_name='Почта', max_length=255, unique=True)
     full_name = models.CharField(verbose_name='Имя', max_length=255)
-    group_id = models.ManyToManyField(Group, verbose_name='Группа', related_name='custom_user_groups', blank=True)
-    task_status = models.ManyToManyField(TaskStatus, verbose_name='Статус задания', related_name='TaskStatus', blank=True)
-    answers = models.ManyToManyField(Answer, verbose_name='Ответы', related_name='Answers', blank=True)
-    generated_tasks = models.ManyToManyField(GeneratedTask, verbose_name='Варианты', related_name='GeneratedTasks', blank=True)
+    group = models.ForeignKey(
+        'group.Group',
+        verbose_name='Группа',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='students'
+    )  # Только для студентов
+    groups = models.ManyToManyField(
+        'group.Group',
+        verbose_name='Группы',
+        blank=True,
+        null=True,
+        related_name='teachers'
+    )  # Только для преподавателей
+    task_status = models.ManyToManyField(
+        'userTaskStatus.TaskStatus',
+        verbose_name='Статус задания',
+        related_name='users',
+        blank=True
+    )
+    generated_tasks = models.ManyToManyField(
+        'generatedTask.GeneratedTask',
+        verbose_name='Варианты',
+        related_name='users',
+        blank=True
+    )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
+
 
     groups = models.ManyToManyField(
         Group,
@@ -43,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser= models.BooleanField(verbose_name='админ', default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name',]
+    REQUIRED_FIELDS = ['full_name']
 
     objects = UserManager()
 

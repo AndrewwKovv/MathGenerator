@@ -22,13 +22,14 @@ export const GetVariantPage: FC = () => {
       return;
     }
 
-    // dispatch(
-    //   studentActions.addInfo({
-    //     hash: '', // Если требуется
-    //     userHash: '', // Если требуется
-    //     tasks: [] // Если требуется
-    //   })
-    // );
+    dispatch(
+      studentActions.addInfo({
+        hash: '',
+        userHash: '',
+        tasks: [],
+        name: ''
+      })
+    );
 
     navigate(`${PATHS.STUDENT}/${variantCode}`);
   };

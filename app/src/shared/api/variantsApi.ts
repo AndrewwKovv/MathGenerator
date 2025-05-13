@@ -8,5 +8,5 @@ export const getVariants = async (): Promise<Variant[]> => {
 
 export const getTasksByVariant = async (variantId: number): Promise<Task[]> => {
   const response = await api.get(`/generated/${variantId}/`);
-  return response.data.tasks; // Предполагается, что API возвращает задания в поле "tasks"
+  return response.data.tasks; // Задания теперь возвращаются из API
 };

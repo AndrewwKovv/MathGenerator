@@ -1,20 +1,21 @@
+// Интерфейс для задания
 export interface Task {
   id: number; // Уникальный идентификатор задания
   title: string; // Название задания
-  data_task: string; // Данные задания (например, описание или параметры)
-  created_at?: string; // Дата создания задания
-  updated_at?: string; // Дата последнего обновления задания
-  variant_id?: number; // ID варианта, к которому относится задание
+  view: string; // Содержание задания (латех)
+  template: string | null; // Шаблон задания
 }
 
 // Интерфейс для варианта
 export interface Variant {
   id: number; // Уникальный идентификатор варианта
-  code: string; // Код варианта (например, уникальный идентификатор для пользователя)
-  title: string; // Название варианта
-  description?: string; // Описание варианта
-  created_at?: string; // Дата создания варианта
-  updated_at?: string; // Дата последнего обновления варианта
-  tasks?: Task[]; // Список заданий, связанных с этим вариантом
-  user_id?: number; // ID пользователя, которому принадлежит вариант
+  hash_code: string; // Хеш-код варианта
+  topic: Topic; // Название темы
+  tasks: Task[]; // Список заданий
+}
+
+export interface Topic {
+  id: number;
+  name: string;
+  section_name: string;
 }

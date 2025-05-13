@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'group',
     'generatedTask',
     'tasks',
-    'templates',
+    'userState',
+    'logi',
+    'notification',
     'userTaskStatus',
     
 ]
@@ -105,7 +107,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'myprojectdb',  
-        'USER': 'myuser', 
+        'USER': 'admin', 
         'PASSWORD': 'mypassword',  
         'HOST': 'localhost', 
         'PORT': '5432', 

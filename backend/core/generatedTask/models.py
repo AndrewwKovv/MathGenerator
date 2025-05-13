@@ -1,19 +1,36 @@
 from django.db import models
-from templates.models import Templates
-from tasks.models import Task
 
 class GeneratedTask(models.Model):
-    created_at = models.DateTimeField(verbose_name='время создания', auto_now_add=True)
-    update_at = models.DateTimeField(verbose_name='время обновления', auto_now=True)
-    code = models.TextField(verbose_name='Код варианта')
-    title = models.CharField(verbose_name='Название варианта', max_length=255)
-    tempalates_ids = models.ManyToManyField(Templates, verbose_name='Тема', related_name='generated_task_templates', blank=True)
-    tasks = models.ManyToManyField(Task, verbose_name='Задания', related_name='generated_task_tasks', blank=True)  # Новое поле
+    hash_code = models.CharField(max_length=255, verbose_name='Хеш-код варианта', null=True)
+    creator = models.ForeignKey(
+        'authentication.User',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='created_tasks',
+        verbose_name='Создатель'
+    )
+    recipients = models.ManyToManyField(
+        'authentication.User',
+        related_name='received_tasks',
+        verbose_name='Получатели',
+        blank=True
+    )
+    topic = models.ForeignKey(
+        'tasks.Topic',
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name='Тема'
+    )
+    tasks = models.ManyToManyField(
+        'tasks.Task',
+        related_name='generated_tasks',
+        verbose_name='Задания',
+        blank=True
+    )
 
     def __str__(self):
-        return self.title
+        return self.hash_code
 
     class Meta:
         verbose_name = 'Вариант'
         verbose_name_plural = 'Варианты'
-        ordering = ['id', 'title']
