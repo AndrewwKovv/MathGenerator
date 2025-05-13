@@ -15,6 +15,9 @@ import { TasksPage } from './tasks';
 import { VariantsPage } from './variants';
 import { MyAnswersPage } from './myAnswers';
 import { GetVariantPage } from './getVariant';
+import { ThemesPage } from './themes';
+import { AddTaksPage } from './addTask';
+import { TaskPage } from './taks';
 
 export const AppRouter: FC = () => {
   const { user } = useAuth();
@@ -26,7 +29,7 @@ export const AppRouter: FC = () => {
     },
     {
       path: PATHS.STUDENT,
-      element: <StudentPage />
+      element: user ? <Navigate to={PATHS.HOME} replace /> : <StudentPage />
     },
     {
       path: PATHS.LOGIN,
@@ -67,6 +70,18 @@ export const AppRouter: FC = () => {
     {
       path: PATHS.TASKS,
       element: user ? <TasksPage /> : <Navigate to={PATHS.LOGIN} replace />
+    },
+    {
+      path: PATHS.THEMES,
+      element: user?.role === 'teacher' ? <ThemesPage /> : <Navigate to={PATHS.LOGIN} replace />
+    },
+    {
+      path: PATHS.ADD_TASK,
+      element: user?.role === 'teacher' ? <AddTaksPage /> : <Navigate to={PATHS.LOGIN} replace />
+    },
+    {
+      path: PATHS.TASK,
+      element: user?.role === 'teacher' ? <TaskPage /> : <Navigate to={PATHS.LOGIN} replace />
     }
   ];
 

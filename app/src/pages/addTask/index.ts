@@ -1,0 +1,1 @@
+export { AddTaksPage } from './addTask';

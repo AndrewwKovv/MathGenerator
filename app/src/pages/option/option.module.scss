@@ -4,6 +4,9 @@
 
 .list {
   list-style: none;
+  width: 80%;
+  align-items: center;
+  display: inline-block;
 }
 
 .header {
@@ -15,8 +18,14 @@
 }
 
 .listItem {
+  padding: 15px;
+  border: 1px solid gray;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+
   & + .listItem {
-    padding-top: 10px;
-    border-top: 1px solid grey;
+
   }
 }

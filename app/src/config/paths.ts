@@ -11,5 +11,8 @@ export const PATHS = {
   REGISTER: '/register',
   MY_ANSWERS: '/my-answers',
   GET_VARIANT: '/get-variant',
-  TASKS: '/tasks'
+  TASKS: '/tasks',
+  ADD_TASK: '/add-task',
+  THEMES: '/themes',
+  TASK: '/task'
 } as const;

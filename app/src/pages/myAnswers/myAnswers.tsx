@@ -2,13 +2,13 @@ import { type FC, useEffect, useState } from 'react';
 import { Carousel } from 'antd';
 import { Page } from 'widgets';
 import { getAnswers } from 'shared/api/answersApi';
-import { type Answer, type Task } from './types';
+import { type Answer, type TaskAnswer } from './types';
 
 import styles from './myAnswers.module.scss';
 
 export const MyAnswersPage: FC = () => {
   const [answers, setAnswers] = useState<Answer[]>([]); // Список ответов
-  const [tasks, setTasks] = useState<Task[]>([]); // Список заданий выбранного ответа
+  const [taskAnswers, setTaskAnswers] = useState<TaskAnswer[]>([]); // Ответы на задания выбранного ответа
 
   useEffect(() => {
     // Получение списка решенных вариантов
@@ -23,8 +23,8 @@ export const MyAnswersPage: FC = () => {
     void fetchAnswers();
   }, []);
 
-  const handleAnswerClick = (tasks: Task[]) => {
-    setTasks(tasks); // Устанавливаем задания выбранного ответа
+  const handleAnswerClick = (taskAnswers: TaskAnswer[]) => {
+    setTaskAnswers(taskAnswers); // Устанавливаем ответы на задания выбранного ответа
   };
 
   return (
@@ -35,43 +35,33 @@ export const MyAnswersPage: FC = () => {
           <div
             key={answer.id}
             className={styles.card}
-            role="button" // Добавлено для доступности
-            tabIndex={0} // Добавлено для доступности
+            role="button"
+            tabIndex={0}
             onClick={() => {
-              handleAnswerClick(answer.tasks);
+              handleAnswerClick(answer.task_answers);
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                handleAnswerClick(answer.tasks);
+                handleAnswerClick(answer.task_answers);
               }
             }}
           >
             <h3>
               Вариант №
-              <br />
-              {answer.variant_code}
+              {answer.generated_task.hash_code}
             </h3>
             <p>
-              {answer.variant_title}
+              {answer.generated_task.topic.name}
             </p>
           </div>
         ))}
       </Carousel>
       <div className={styles.divider} />
       <Carousel className={styles.tasksCarousel} vertical dots={false}>
-        {tasks.map((task) => (
-          <div key={task.id} className={styles.taskCard}>
-            <h3>
-              {task.title}
-            </h3>
-            <p>
-              {task.data_task}
-            </p>
-            <p className={styles.userAnswer}>
-              Ответ:
-              <br />
-              {task.user_answer}
-            </p>
+        {taskAnswers.map((taskAnswer) => (
+          <div key={taskAnswer.id} className={styles.taskCard}>
+            <h3>{taskAnswer.task.title}</h3>
+            <p>{taskAnswer.answer_text}</p>
           </div>
         ))}
       </Carousel>

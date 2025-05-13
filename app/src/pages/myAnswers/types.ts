@@ -1,10 +1,4 @@
-export interface Answer {
-  id: number; // Уникальный идентификатор ответа
-  created_at: string; // Дата создания ответа
-  update_at: string; // Дата последнего обновления ответа
-  name: string; // Текст ответа
-}
-
+// Интерфейс для задания
 export interface Task {
   id: number; // Уникальный идентификатор задания
   title: string; // Название задания
@@ -12,11 +6,30 @@ export interface Task {
   user_answer: string; // Ответ пользователя
 }
 
+// Интерфейс для ответа на задание
+export interface TaskAnswer {
+  id: number; // Уникальный идентификатор ответа на задание
+  task: Task; // Связанное задание
+  answer_text: string; // Текст ответа
+}
+
+// Интерфейс для ответа
 export interface Answer {
   id: number; // Уникальный идентификатор ответа
-  variant_code: string; // Код варианта
-  variant_title: string; // Название варианта
-  tasks: Task[]; // Список заданий, связанных с этим вариантом
+  user: {
+    id: number; // ID пользователя
+    full_name: string; // ФИО пользователя
+  };
+  generated_task: {
+    id: number; // ID варианта
+    hash_code: string; // Хеш-код варианта
+    topic: {
+      id: number; // ID темы
+      name: string; // Название темы
+      section_name: string; // Название секции
+    };
+  };
+  task_answers: TaskAnswer[]; // Список ответов на задания
   created_at: string; // Дата создания ответа
-  update_at: string; // Дата последнего обновления ответа
+  updated_at: string; // Дата последнего обновления ответа
 }

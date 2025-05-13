@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Carousel } from 'antd';
 import { PATHS } from 'config';
 import { Page } from 'widgets';
-import { Button } from 'shared/components';
+import { MathText } from 'shared/components';
 import { getVariants, getTasksByVariant } from 'shared/api/variantsApi';
 
 import styles from './variants.module.scss';
@@ -14,6 +14,8 @@ export const VariantsPage: FC = () => {
   const [variants, setVariants] = useState<Variant[]>([]); // Список вариантов
   const [tasks, setTasks] = useState<Task[]>([]); // Список заданий выбранного варианта
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null); // ID выбранного варианта
+
+  console.log(tasks);
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -56,10 +58,10 @@ export const VariantsPage: FC = () => {
         >
           <button type="button" className={styles.addButton}>+</button>
         </div>
-        {variants.map((variant) => (
+        {variants?.map((variant) => (
           <div
             key={variant.id}
-            className={styles.card}
+            className={`${styles.card} ${selectedVariant === variant.id ? styles.activeCard : ''}`}
             role="button"
             tabIndex={0}
             onClick={() => {
@@ -71,18 +73,26 @@ export const VariantsPage: FC = () => {
               }
             }}
           >
-            <h3>Вариант №</h3>
-            <p>{variant.title}</p>
-            <p>{variant.code}</p>
+            <div className={styles.cart__title}>
+              <h3>
+                Вариант №
+                {variant.id}
+              </h3>
+              <p>
+                {variant.topic?.section_name || 'Без темы'}
+              </p>
+            </div>
           </div>
         ))}
       </Carousel>
       <div className={styles.divider} />
       <Carousel className={styles.tasksCarousel} vertical dots={false}>
-        {tasks.map((task) => (
+        {tasks?.map((task) => (
           <div key={task.id} className={styles.taskCard}>
-            <h3>{task.title}</h3>
-            <p>{task.data_task}</p>
+            <h3>
+              <MathText>{task.title || 'Название отсутствует'}</MathText>
+            </h3>
+            <MathText>{task.view || 'Содержание отсутствует'}</MathText>
           </div>
         ))}
       </Carousel>
