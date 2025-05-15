@@ -2,8 +2,14 @@
 export interface Task {
   id: number; // Уникальный идентификатор задания
   title: string; // Название задания
-  data_task: string; // Данные задания (например, описание или параметры)
-  user_answer: string; // Ответ пользователя
+  view: string; // Содержание задания (латех)
+  template: string | null; // Шаблон задания
+}
+
+export interface Topic {
+  id: number;
+  name: string;
+  section_name: string;
 }
 
 // Интерфейс для ответа на задание

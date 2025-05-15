@@ -17,6 +17,7 @@ import { MyAnswersPage } from './myAnswers';
 import { GetVariantPage } from './getVariant';
 import { ThemesPage } from './themes';
 import { AddTaksPage } from './addTask';
+import { ProfilePage } from './profile';
 import { TaskPage } from './taks';
 
 export const AppRouter: FC = () => {
@@ -66,6 +67,10 @@ export const AppRouter: FC = () => {
     {
       path: PATHS.GET_VARIANT,
       element: user ? <GetVariantPage /> : <Navigate to={PATHS.LOGIN} replace />
+    },
+    {
+      path: PATHS.PROFILE,
+      element: user ? <ProfilePage /> : <Navigate to={PATHS.LOGIN} replace />
     },
     {
       path: PATHS.TASKS,

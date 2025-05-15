@@ -9,6 +9,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 class TopicViewSet(viewsets.ModelViewSet):
-    queryset = Topic.objects.all()
+    queryset = Topic.objects.prefetch_related('tasks').all()
     serializer_class = TopicSerializer
     permission_classes = [IsAuthenticated]

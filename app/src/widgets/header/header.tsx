@@ -53,7 +53,7 @@ export const Header: FC = () => {
               </Button>
               {isDropdownOpen && (
                 <div className={styles.dropdown}>
-                  <Link to={PATHS.HOME} className={styles.dropdownItem}>
+                  <Link to={PATHS.PROFILE} className={styles.dropdownItem}>
                     Настройки
                   </Link>
                   {user.role !== 'teacher' && (

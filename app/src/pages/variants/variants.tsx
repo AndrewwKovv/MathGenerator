@@ -4,6 +4,7 @@ import { Carousel } from 'antd';
 import { PATHS } from 'config';
 import { Page } from 'widgets';
 import { MathText } from 'shared/components';
+import { BlockMath } from 'react-katex';
 import { getVariants, getTasksByVariant } from 'shared/api/variantsApi';
 
 import styles from './variants.module.scss';
@@ -14,8 +15,6 @@ export const VariantsPage: FC = () => {
   const [variants, setVariants] = useState<Variant[]>([]); // Список вариантов
   const [tasks, setTasks] = useState<Task[]>([]); // Список заданий выбранного варианта
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null); // ID выбранного варианта
-
-  console.log(tasks);
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -86,16 +85,16 @@ export const VariantsPage: FC = () => {
         ))}
       </Carousel>
       <div className={styles.divider} />
-      <Carousel className={styles.tasksCarousel} vertical dots={false}>
+      <div className={styles.tasksCarousel}>
         {tasks?.map((task) => (
           <div key={task.id} className={styles.taskCard}>
-            <h3>
-              <MathText>{task.title || 'Название отсутствует'}</MathText>
-            </h3>
-            <MathText>{task.view || 'Содержание отсутствует'}</MathText>
+            <p>
+              <MathText type="secondary">{task.title || 'Название отсутствует'}</MathText>
+            </p>
+            <BlockMath>{task.view || 'Содержание отсутствует'}</BlockMath>
           </div>
         ))}
-      </Carousel>
+      </div>
     </Page>
   );
 };

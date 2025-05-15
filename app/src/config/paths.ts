@@ -14,5 +14,6 @@ export const PATHS = {
   TASKS: '/tasks',
   ADD_TASK: '/add-task',
   THEMES: '/themes',
+  PROFILE: '/profile',
   TASK: '/task'
 } as const;

@@ -18,6 +18,12 @@ api.interceptors.request.use((config) => {
 
 export const login = async (email: string, password: string) => {
   const response = await api.post('auth/login/', { email, password }); // Отправляем email вместо username
+  const { access_token: accessToken } = response.data;
+
+  if (accessToken) {
+    localStorage.setItem('access_token', accessToken); // Сохраняем токен в localStorage
+  }
+
   return response.data;
 };
 
@@ -36,6 +42,8 @@ export const logout = async (token: string) => {
       headers: { Authorization: `Bearer ${token}` }
     }
   );
+
+  localStorage.removeItem('access_token'); // Удаляем токен из localStorage
   return response.data;
 };
 

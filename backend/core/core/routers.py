@@ -2,7 +2,7 @@ from rest_framework import routers
 from logi.views import LogViewSet
 from notification.views import NotificationViewSet
 from userState.views import UserStateViewSet
-from tasks.views import TaskViewSet
+from tasks.views import TaskViewSet, TopicViewSet
 from authentication.views import UserViewSet
 from answer.views import TaskAnswerViewSet, AnswerViewSet
 from generatedTask.views import GeneratedTaskViewSet
@@ -13,6 +13,7 @@ from userTaskStatus.views import TaskStatusViewSet
 router = routers.DefaultRouter()
 
 router.register(r'task',  TaskViewSet)
+router.register(r'topic',  TopicViewSet)
 router.register(r'auth',  UserViewSet)
 router.register(r'task-answers', TaskAnswerViewSet, basename='task-answer')
 router.register(r'answers', AnswerViewSet, basename='answer')

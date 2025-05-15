@@ -2,8 +2,9 @@ import { type FC, useEffect, useState } from 'react';
 import { Carousel } from 'antd';
 import { Page } from 'widgets';
 import { getAnswers } from 'shared/api/answersApi';
+import { MathText } from 'shared/components';
+import { BlockMath } from 'react-katex';
 import { type Answer, type TaskAnswer } from './types';
-
 import styles from './myAnswers.module.scss';
 
 export const MyAnswersPage: FC = () => {
@@ -46,25 +47,33 @@ export const MyAnswersPage: FC = () => {
               }
             }}
           >
-            <h3>
-              Вариант №
-              {answer.generated_task.hash_code}
-            </h3>
-            <p>
-              {answer.generated_task.topic.name}
-            </p>
+            <div className={styles.cart__title}>
+              <h3>
+                Вариант №
+                {answer?.generated_task?.hash_code}
+              </h3>
+              <p>
+                {answer?.generated_task?.topic?.name || 'Без темы'}
+              </p>
+            </div>
           </div>
         ))}
       </Carousel>
       <div className={styles.divider} />
-      <Carousel className={styles.tasksCarousel} vertical dots={false}>
-        {taskAnswers.map((taskAnswer) => (
-          <div key={taskAnswer.id} className={styles.taskCard}>
-            <h3>{taskAnswer.task.title}</h3>
-            <p>{taskAnswer.answer_text}</p>
+      <div className={styles.tasksCarousel}>
+        {answers.map((answer) => (
+          <div key={answer.id} className={styles.taskCard}>
+            {answer.task_answers.map((taskAnswer) => (
+              <div key={taskAnswer.id}>
+                <p>
+                  <MathText type="secondary">{taskAnswer.task.title || 'Название отсутствует'}</MathText>
+                </p>
+                <BlockMath>{taskAnswer.task.view || 'Содержание отсутствует'}</BlockMath>
+              </div>
+            ))}
           </div>
         ))}
-      </Carousel>
+      </div>
     </Page>
   );
 };
