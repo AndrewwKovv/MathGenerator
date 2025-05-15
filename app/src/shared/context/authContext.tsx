@@ -12,17 +12,13 @@ import {
   getUser as apiGetUser,
   logout as apiLogout
 } from 'shared/api/authApi';
+import { type User } from 'pages/profile/types';
 import axios from 'axios';
 
-interface User {
-  id: number
-  email: string
-  role: string
-}
-
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<void>
+  setUser: (user: User | null) => void // Добавляем setUser
   logout: () => void
 }
 
@@ -76,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem('access_token');
   }, [token]);
 
-  const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);
+  const value = useMemo(() => ({ user, login, setUser, logout }), [user, login, setUser, logout]);
 
   return (
     <AuthContext.Provider value={value}>

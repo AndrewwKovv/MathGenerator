@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, NotFound, AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -54,3 +55,16 @@ class UserViewSet(viewsets.ModelViewSet):
         response = Response()
         response.delete_cookie('refresh')
         return response
+    
+    @action(methods=['PUT'], detail=False, permission_classes=[IsAuthenticated], url_path='update')
+    def update_user(self, request):
+        user = request.user  # Получаем текущего пользователя
+        serializer = self.serializer_class(user, data=request.data, partial=True)  # partial=True для частичного обновления
+        serializer.is_valid(raise_exception=True)
+
+        # Проверяем, что пользователь не пытается изменить критические поля (например, роль)
+        if 'role' in request.data and request.data['role'] != user.role:
+            raise PermissionDenied({'error': 'Вы не можете изменить свою роль'})
+
+        serializer.save()  # Сохраняем изменения
+        return Response(serializer.data)

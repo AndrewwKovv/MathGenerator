@@ -11,23 +11,41 @@
   margin-bottom: 20px;
 
   .card {
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
+    max-width: 224px !important;
     height: 150px;
     background: #f0f0f0;
-    border: 1px solid #ccc;
+    border: 1px solid gray;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
+    position: relative;
+    transition: box-shadow 0.3s ease;
 
-    h3 {
-      margin: 0;
+    &.activeCard {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-color: #3b5bbb;
     }
+  }
 
-    p {
-      margin: 0;
-      font-size: 14px;
+  .addButton {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #3b5bbb;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #2a4488;
     }
   }
 }
@@ -44,6 +62,7 @@
     background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
+    margin: 25px 0;
 
     h3 {
       margin: 0 0 10px;
@@ -51,11 +70,6 @@
 
     p {
       margin: 0;
-    }
-
-    .userAnswer {
-      font-weight: bold;
-      color: #007bff;
     }
   }
 }
