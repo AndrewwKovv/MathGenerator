@@ -88,7 +88,7 @@ export const ThemesPage: FC = () => {
             }}
           >
             <div className={styles.cart__title}>
-              <h3>{topic.section_name || 'Без секции'}</h3>
+              <h4>{topic.section_name || 'Без секции'}</h4>
             </div>
           </div>
         ))}

@@ -1,64 +1,78 @@
 import { Input } from 'antd';
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { SHA512 } from 'crypto-js';
+
+import { decodeTasks } from 'store/utils';
 import { studentActions } from 'store/student';
 import { useAuth } from 'shared/context/authContext';
-import { PATHS } from 'config';
-
 import { Button } from 'shared/components';
-import { Header } from 'widgets/header';
+import { PATHS } from 'config';
+import { Page } from 'widgets/page';
+
 import styles from './getVariant.module.scss';
 
 export const GetVariantPage: FC = () => {
-  const [variantCode, setVariantCode] = useState('');
-  const { user } = useAuth();
+  const { user } = useAuth(); // Получаем данные пользователя из сессии
+  const [hash, setHash] = useState('');
+  const [name, setName] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (!variantCode) {
-      alert('Введите код варианта');
-      return;
+  useEffect(() => {
+    if (user) {
+      // Формируем строку ФИО + группа
+      const fullNameWithGroup = `${user.full_name} ${String(user.group?.name)}`.trim();
+      setName(fullNameWithGroup);
     }
+  }, [user]);
 
-    dispatch(
-      studentActions.addInfo({
-        hash: '',
-        userHash: '',
-        tasks: [],
-        name: ''
-      })
-    );
-
-    navigate(`${PATHS.STUDENT}/${variantCode}`);
+  const handleClick = () => {
+    const hashedName = SHA512(name).toString(); // Генерируем userHash
+    const decodedTasks = decodeTasks(hash); // Декодируем задания из кода варианта
+    if (decodedTasks.length > 0) {
+      dispatch(
+        studentActions.addInfo({
+          hash,
+          name,
+          userHash: hashedName,
+          tasks: decodedTasks
+        })
+      );
+      navigate(PATHS.OPTION); // Переход на страницу с вариантом
+    } else {
+      alert('Неверный код варианта');
+    }
   };
 
+  const isButtonDisabled = !hash;
+
   return (
-    <>
-      <Header />
-      <div className={styles.wrapper}>
-        <h1>Получить вариант</h1>
-        <p>Введите код варианта, чтобы получить доступ к заданиям.</p>
-        <div className={styles.inputContainer}>
-          <Input
-            className={styles.input}
-            type="text"
-            value={variantCode}
-            onChange={(e) => {
-              setVariantCode(e.target.value);
-            }}
-            placeholder="Введите код варианта"
-          />
-          <Button
-            type="primary"
-            className={styles.button}
-            onClick={handleClick}
-          >
-            Получить
-          </Button>
-        </div>
+    <Page className={styles.wrapper}>
+      <h1 className={styles.title}>Получить вариант</h1>
+      <p className={styles.description}>
+        Введите код варианта, полученный от преподавателя.
+      </p>
+      <div className={styles.inputContainer}>
+        <Input
+          className={styles.input}
+          type="text"
+          value={hash}
+          onChange={(e) => {
+            setHash(e.target.value);
+          }}
+          placeholder="Введите код варианта"
+        />
+        <Button
+          type="primary"
+          onClick={handleClick}
+          disabled={isButtonDisabled}
+          className={styles.button}
+        >
+          Получить вариант
+        </Button>
       </div>
-    </>
+    </Page>
   );
 };

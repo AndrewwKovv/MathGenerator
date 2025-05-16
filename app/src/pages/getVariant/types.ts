@@ -1,6 +1,6 @@
 export interface User {
   id: number;
+  full_name: string;
   email: string;
-  fullName: string; // Добавлено
-  group: string; // Добавлено
+  group?: string;
 }
