@@ -3,7 +3,7 @@ export interface Task {
   id: number; // Уникальный идентификатор задания
   title: string; // Название задания
   view: string; // Содержание задания (латех)
-  template: string | null; // Шаблон задания
+  topics: string | null; // Шаблон задания
 }
 
 // Интерфейс для варианта

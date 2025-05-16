@@ -10,7 +10,40 @@ h1 {
 }
 
 .form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.buttons {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.buttonPrimary {
+  background-color: #3b5bbb;
+  border-color: #3b5bbb;
+  color: #fff;
+
+  &:hover {
+    background-color: #2a4488;
+    border-color: #2a4488;
+  }
+
+  &:focus {
+    background-color: #3b5bbb;
+    border-color: #3b5bbb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 187, 0.2);
+  }
+}
+
+.buttonDanger {
+  background-color: #E63246;
+  border-color: #E63246;
+  color: #fff !important;
+
+  &:hover {
+    border-color: #c1273b !important;
+    color: #c1273b !important;
+  }
 }
