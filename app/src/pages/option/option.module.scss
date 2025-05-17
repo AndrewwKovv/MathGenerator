@@ -1,31 +1,69 @@
 .page {
-  text-align: center;
-}
-
-.list {
-  list-style: none;
-  width: 80%;
-  align-items: center;
-  display: inline-block;
+  padding: 20px;
+  max-width: 1150px;
+  margin: 0 auto;
 }
 
 .header {
-  margin-bottom: 35px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
 }
 
-.link {
-  color: blue;
+.user {
+  font-size: 16px;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .listItem {
+  margin-bottom: 20px;
   padding: 15px;
-  border: 1px solid gray;
+  border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  & + .listItem {
+.answerInput {
+  margin-top: 10px;
+  max-width: 280px;
+}
 
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.taskList {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  align-items: center;
+}
+
+.submitButton {
+  align-self: center;
+  background-color: #3b5bbb;
+  border-color: #3b5bbb;
+  margin-bottom: 20px;
+  color: #fff;
+
+  &:hover {
+    background-color: #2a4488;
+    border-color: #2a4488;
   }
+
+}
+
+.hash {
+  font-size: 14px;
 }

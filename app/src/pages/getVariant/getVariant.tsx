@@ -65,10 +65,9 @@ export const GetVariantPage: FC = () => {
           placeholder="Введите код варианта"
         />
         <Button
-          type="primary"
           onClick={handleClick}
           disabled={isButtonDisabled}
-          className={styles.button}
+          className={styles.buttonPrimary}
         >
           Получить вариант
         </Button>

@@ -1,26 +1,16 @@
 from django.contrib import admin
-from .models import TaskAnswer, Answer, AnonymousSolution
-
-
-@admin.register(TaskAnswer)
-class TaskAnswerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'task', 'answer_text')
-    list_display_links = ('id', 'task')
-    search_fields = ('task__title', 'answer_text')
-    list_filter = ('task',)
+from .models import Answer
 
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'generated_task', 'anonymous_solution')
-    list_display_links = ('id', 'user')
-    search_fields = ('user__full_name', 'generated_task__hash_code', 'anonymous_solution__full_name')
-    list_filter = ('generated_task',)
-
-
-@admin.register(AnonymousSolution)
-class AnonymousSolutionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'full_name', 'created_at')
-    list_display_links = ('id', 'full_name')
-    search_fields = ('full_name', 'solution')
-    list_filter = ('created_at',)
+    list_display = ('id', 'user', 'full_name', 'generated_task', 'created_at')  # Отображаем ключевые поля
+    list_display_links = ('id', 'user', 'full_name')  # Делаем кликабельными ID, пользователя и ФИО
+    search_fields = ('user__full_name', 'full_name', 'generated_task__hash_code')  # Поиск по пользователю, ФИО и hash варианта
+    list_filter = ('generated_task', 'created_at')  # Фильтрация по варианту и дате создания
+    readonly_fields = ('created_at', 'generated_task_hash')  # Поля только для чтения
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'full_name', 'generated_task', 'task_answers', 'created_at', 'generated_task_hash')
+        }),
+    )

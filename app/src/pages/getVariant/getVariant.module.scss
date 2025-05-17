@@ -21,6 +21,20 @@
   gap: 10px;
 }
 
-.button {
+.buttonPrimary {
   align-self: center;
+  background-color: #3b5bbb;
+  border-color: #3b5bbb;
+  color: #fff;
+
+  &:hover {
+    background-color: #2a4488;
+    border-color: #2a4488;
+  }
+
+  &:focus {
+    background-color: #3b5bbb;
+    border-color: #3b5bbb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 187, 0.2);
+  }
 }
