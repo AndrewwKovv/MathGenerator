@@ -3,73 +3,97 @@
 }
 
 .title {
-  text-align: center;
+  font-size: 24px;
   margin-bottom: 20px;
+}
+
+.noAnswers {
+  font-size: 18px;
+  color: #888;
+  text-align: center;
 }
 
 .carousel {
   margin-bottom: 20px;
+}
 
-  .card {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    max-width: 224px !important;
-    height: 150px;
-    background: #f0f0f0;
-    border: 1px solid gray;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-    transition: box-shadow 0.3s ease;
-
-    &.activeCard {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      border-color: #3b5bbb;
-    }
+.card {
+  display: flex !important; 
+  justify-content: center;
+  align-items: center;
+  max-width: 224px !important;
+  height: 150px;
+  background: #f0f0f0;
+  border: 1px solid gray;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  transition: box-shadow 0.3s ease;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 58%;
+    height: 1px;
+    background-color: #ccc; // светло-серая линия
   }
+  &::before {
+    left: 0;
+    transform: rotate(30deg);
+    transform-origin: top left;
+    top: 10px;
+  }
+  &::after {
+    right: 0;
+    transform: rotate(-30deg);
+    transform-origin: top right;
+    top: 10px;
+  }
+  h3 {
+    margin: 0;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+  &.activeCard {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-color: #3b5bbb;
+  }
+}
 
-  .addButton {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #3b5bbb;
-    color: #fff;
+.card:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.cart__title {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #2a4488;
-    }
-  }
+    margin-top: 60px;
+    gap: 5px;
+    z-index: 99;
 }
 
 .divider {
   height: 2px;
-  background: #ccc;
+  background-color: #ddd;
   margin: 20px 0;
 }
 
 .tasksCarousel {
-  .taskCard {
-    padding: 10px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 25px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
 
-    h3 {
-      margin: 0 0 10px;
-    }
-
-    p {
-      margin: 0;
-    }
-  }
+.taskCard {
+  flex: 1 1 calc(25% - 15px);
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }

@@ -4,12 +4,13 @@ import { Page } from 'widgets';
 import { getAnswers } from 'shared/api/answersApi';
 import { MathText } from 'shared/components';
 import { BlockMath } from 'react-katex';
-import { type Answer, type TaskAnswer } from './types';
+import { type Answer } from './types';
 import styles from './myAnswers.module.scss';
 
 export const MyAnswersPage: FC = () => {
   const [answers, setAnswers] = useState<Answer[]>([]); // Список ответов
-  const [taskAnswers, setTaskAnswers] = useState<TaskAnswer[]>([]); // Ответы на задания выбранного ответа
+  const [selectedTaskAnswers, setSelectedTaskAnswers] = useState<Answer['task_answers']>([]); // Ответы на задания выбранного ответа
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Получение списка решенных вариантов
@@ -17,16 +18,34 @@ export const MyAnswersPage: FC = () => {
       try {
         const data = await getAnswers();
         setAnswers(data); // Устанавливаем ответы
+        if (data.length > 0) {
+          setSelectedTaskAnswers(data[0].task_answers); // По умолчанию выбираем первый вариант
+        }
       } catch (error) {
         console.error('Ошибка при загрузке ответов:', error);
+      } finally {
+        setLoading(false);
       }
     };
     void fetchAnswers();
   }, []);
 
-  const handleAnswerClick = (taskAnswers: TaskAnswer[]) => {
-    setTaskAnswers(taskAnswers); // Устанавливаем ответы на задания выбранного ответа
+  const handleAnswerClick = (taskAnswers: Answer['task_answers']) => {
+    setSelectedTaskAnswers(taskAnswers); // Устанавливаем ответы на задания выбранного ответа
   };
+
+  if (loading) {
+    return <Page className={styles.wrapper}>Загрузка...</Page>;
+  }
+
+  if (answers.length === 0) {
+    return (
+      <Page className={styles.wrapper}>
+        <h1 className={styles.title}>Мои решения</h1>
+        <p className={styles.noAnswers}>У вас пока нет решений.</p>
+      </Page>
+    );
+  }
 
   return (
     <Page className={styles.wrapper}>
@@ -50,10 +69,10 @@ export const MyAnswersPage: FC = () => {
             <div className={styles.cart__title}>
               <h3>
                 Вариант №
-                {answer?.generated_task?.hash_code}
+                {answer.generated_task}
               </h3>
               <p>
-                {answer?.generated_task?.topic?.name || 'Без темы'}
+                {answer.generated_task_hash}
               </p>
             </div>
           </div>
@@ -61,16 +80,12 @@ export const MyAnswersPage: FC = () => {
       </Carousel>
       <div className={styles.divider} />
       <div className={styles.tasksCarousel}>
-        {answers.map((answer) => (
-          <div key={answer.id} className={styles.taskCard}>
-            {answer.task_answers.map((taskAnswer) => (
-              <div key={taskAnswer.id}>
-                <p>
-                  <MathText type="secondary">{taskAnswer.task.title || 'Название отсутствует'}</MathText>
-                </p>
-                <BlockMath>{taskAnswer.task.view || 'Содержание отсутствует'}</BlockMath>
-              </div>
-            ))}
+        {selectedTaskAnswers.map((taskAnswer: Answer['task_answers'][number]) => (
+          <div key={taskAnswer.taskId} className={styles.taskCard}>
+            <p>
+              <MathText type="secondary">{`Задание ${String(taskAnswer.taskId)}`}</MathText>
+            </p>
+            <BlockMath>{taskAnswer.answerText}</BlockMath>
           </div>
         ))}
       </div>

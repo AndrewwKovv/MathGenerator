@@ -54,7 +54,7 @@ export const AppRouter: FC = () => {
     },
     {
       path: PATHS.OPTION,
-      element: user ? <Option /> : <Navigate to={PATHS.LOGIN} replace />
+      element: <Option />
     },
     {
       path: PATHS.QR,
