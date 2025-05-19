@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from 'shared/components';
 import { PATHS } from 'config';
 import { Header } from 'widgets/header';
+import { message } from 'antd';
 
 import styles from './login.module.scss';
 
@@ -16,6 +17,12 @@ export const LoginPage: FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      void message.error('Пожалуйста, заполните все поля');
+      return;
+    }
+
     try {
       await login(email, password);
       navigate('/'); // Перенаправление на главную страницу после успешного входа
