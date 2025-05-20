@@ -5,7 +5,7 @@ export interface ITask {
   template: string
 }
 
-interface IConfiguration {
+export interface IConfiguration {
   section: string
   section_name: string
   tasks: ITask[]

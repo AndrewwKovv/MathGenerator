@@ -30,7 +30,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         'group.Group',
         verbose_name='Группы',
         blank=True,
-        null=True,
         related_name='teachers'
     )  # Только для преподавателей
     task_status = models.ManyToManyField(

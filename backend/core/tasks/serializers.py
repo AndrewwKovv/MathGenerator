@@ -12,7 +12,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'view', 'topics']
+        fields = ['id', 'title', 'view','data_task' , 'topics']
 
 class TopicSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True, read_only=True)  # Полные данные о заданиях

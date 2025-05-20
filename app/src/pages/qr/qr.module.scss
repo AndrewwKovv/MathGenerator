@@ -1,6 +1,6 @@
 .wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
 }
 
@@ -17,4 +17,20 @@
 .pathButtons {
   display: flex;
   gap: var(--indent-size-s)
+}
+
+.notificationForm {
+  margin-top: 40px;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 20px;
+  }
+
+  .ant-btn {
+    width: 100%;
+  }
 }

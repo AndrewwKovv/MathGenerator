@@ -6,7 +6,7 @@ from generatedTask.serializers import GeneratedTaskSerializer
 
 class AnswerSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)  # Отображение информации о пользователе
-    # generated_task = GeneratedTaskSerializer(read_only=True)  # Полные данные о варианте
+    generated_task = GeneratedTaskSerializer(read_only=True)  # Полные данные о варианте
     generated_task_id = serializers.PrimaryKeyRelatedField(
         queryset=GeneratedTask.objects.all(),
         write_only=True,

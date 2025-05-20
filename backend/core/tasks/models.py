@@ -14,7 +14,8 @@ class Topic(models.Model):
 
 class Task(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название задания')
-    view = models.TextField(verbose_name='Содержание задания (латех)')
+    view = models.TextField(verbose_name='Содержание задания')
+    data_task = models.TextField(verbose_name='Содержание задания (латех)')
     topics = models.ManyToManyField(Topic, related_name='tasks', verbose_name='Темы задания')  # Связь с темами
 
     def __str__(self):
