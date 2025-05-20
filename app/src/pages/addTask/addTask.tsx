@@ -71,6 +71,15 @@ export const AddTaksPage: FC = () => {
             placeholder="Введите отображение задания"
           />
         </Form.Item>
+        <Form.Item label="Содержание задания">
+          <Input
+            value={view}
+            onChange={(e) => {
+              setView(e.target.value);
+            }}
+            placeholder="Введите содержание задания"
+          />
+        </Form.Item>
         <Form.Item label="Темы задания">
           <Select
             mode="multiple"

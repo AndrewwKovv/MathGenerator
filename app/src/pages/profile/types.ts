@@ -16,3 +16,11 @@ export interface Group {
   id: number;
   name: string;
 }
+
+export interface Notification {
+  id: number;
+  sender: string | null; // Имя отправителя (может быть null, если отправитель - система)
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}

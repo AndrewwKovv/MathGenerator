@@ -3,7 +3,7 @@ from .models import Task, Topic
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'view')  # Отображаемые поля
+    list_display = ('id', 'title', 'view', 'data_task')  # Отображаемые поля
     list_display_links = ('id', 'title')
     search_fields = ('title', 'view')
     list_filter = ('topics',)  # Фильтр по темам

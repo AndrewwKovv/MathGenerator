@@ -26,7 +26,7 @@ export const RegisterPage: FC = () => {
       await apiRegister({ email, password, full_name: fullName });
       navigate(PATHS.LOGIN); // Перенаправление на страницу логина после успешной регистрации
     } catch {
-      setError('Ошибка при регистрации');
+      setError('Пользователь уже существует');
     }
   };
 

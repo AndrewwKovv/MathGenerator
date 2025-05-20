@@ -30,7 +30,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         'group.Group',
         verbose_name='Группы',
         blank=True,
-        null=True,
         related_name='teachers'
     )  # Только для преподавателей
     task_status = models.ManyToManyField(
@@ -47,13 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
 
-
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name='Группы',
-        related_name='auth_user_groups',  # Уникальное имя обратной связи
-        blank=True,
-    )
     user_permissions = models.ManyToManyField(
         Permission,
         verbose_name='Права пользователя',

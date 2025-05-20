@@ -4,13 +4,27 @@ import { Page } from 'widgets';
 import { getAnswers } from 'shared/api/answersApi';
 import { MathText } from 'shared/components';
 import { BlockMath } from 'react-katex';
+import { SHA512 } from 'crypto-js';
+import { Parser } from 'core';
+import { useAuth } from 'shared/context/authContext'; // Импортируем контекст авторизации
 import { type Answer } from './types';
 import styles from './myAnswers.module.scss';
 
 export const MyAnswersPage: FC = () => {
+  const { user } = useAuth(); // Получаем данные авторизованного пользователя
   const [answers, setAnswers] = useState<Answer[]>([]); // Список ответов
   const [selectedTaskAnswers, setSelectedTaskAnswers] = useState<Answer['task_answers']>([]); // Ответы на задания выбранного ответа
   const [loading, setLoading] = useState<boolean>(true);
+  const [userHash, setUserHash] = useState<string>(''); // Хэш пользователя
+
+  useEffect(() => {
+    // Генерация userHash на основе имени пользователя и группы
+    if (user) {
+      const nameWithGroup = `${user.full_name} ${String(user.group?.name)}`;
+      const hashedName = SHA512(nameWithGroup).toString(); // Генерируем хэш
+      setUserHash(hashedName);
+    }
+  }, [user]);
 
   useEffect(() => {
     // Получение списка решенных вариантов
@@ -69,7 +83,6 @@ export const MyAnswersPage: FC = () => {
             <div className={styles.cart__title}>
               <h3>
                 Вариант №
-                {answer.generated_task}
               </h3>
               <p>
                 {answer.generated_task_hash}
@@ -80,14 +93,26 @@ export const MyAnswersPage: FC = () => {
       </Carousel>
       <div className={styles.divider} />
       <div className={styles.tasksCarousel}>
-        {selectedTaskAnswers.map((taskAnswer: Answer['task_answers'][number]) => (
-          <div key={taskAnswer.taskId} className={styles.taskCard}>
-            <p>
-              <MathText type="secondary">{`Задание ${String(taskAnswer.taskId)}`}</MathText>
-            </p>
-            <BlockMath>{taskAnswer.answerText}</BlockMath>
-          </div>
-        ))}
+        {selectedTaskAnswers.map((taskAnswer, index) => {
+          const task = answers
+            .flatMap((answer) => answer.task_answers)
+            .find((t) => t.taskId === taskAnswer.taskId);
+
+          if (!task) {
+            return null;
+          }
+
+          const parsedTask = Parser.parse(taskAnswer.answerText, userHash, index * 10);
+
+          return (
+            <div key={taskAnswer.taskId} className={styles.taskCard}>
+              <p>
+                <MathText type="secondary">{`Задание ${taskAnswer.taskId}`}</MathText>
+              </p>
+              <BlockMath>{parsedTask}</BlockMath>
+            </div>
+          );
+        })}
       </div>
     </Page>
   );

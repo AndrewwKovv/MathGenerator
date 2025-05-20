@@ -158,6 +158,14 @@ export const TaskPage: FC = () => {
                     onChange={(e) => {
                       setEditingTask({ ...editingTask, view: e.target.value });
                     }}
+                    placeholder="Отображение задания"
+                  />
+                  <Input.TextArea
+                    className={styles.editTextarea}
+                    value={editingTask.view}
+                    onChange={(e) => {
+                      setEditingTask({ ...editingTask, view: e.target.value });
+                    }}
                     placeholder="Математическое представление"
                   />
                   <div className={styles.editButtons}>
