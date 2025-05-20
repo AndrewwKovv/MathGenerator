@@ -18,7 +18,7 @@ class Notification(models.Model):
     )
     message = models.TextField(verbose_name='Сообщение')
     is_read = models.BooleanField(default=False, verbose_name='Прочитано')  # Флаг прочитанности
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', null=True, blank=True)
 
     def __str__(self):
         return f"Уведомление для {self.user.full_name} от {self.sender.full_name if self.sender else 'Системы'}"

@@ -23,7 +23,7 @@ class Answer(models.Model):
         related_name='answers'
     )
     task_answers = JSONField(verbose_name='Ответы на задания', default=list)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', default=now)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', null=True, blank=True)
 
     # Дополнительные поля для хранения данных варианта
     generated_task_hash = models.CharField(max_length=255, verbose_name='Hash варианта')
