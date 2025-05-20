@@ -10,7 +10,7 @@ class UserState(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     state = models.CharField(max_length=20, choices=STATE_CHOICES, default='active', verbose_name='Состояние')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления', null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.full_name} - {self.state}"

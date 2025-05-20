@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class Group(models.Model):
-    created_at = models.DateTimeField(verbose_name='время создания', auto_now_add = True)
-    update_at = models.DateTimeField(verbose_name='время обновления', auto_now = True)
+    created_at = models.DateTimeField(verbose_name='время создания', auto_now_add = True, null=True, blank=True)
+    update_at = models.DateTimeField(verbose_name='время обновления', auto_now = True, null=True, blank=True)
     name = models.CharField(verbose_name='Номер группы', max_length=255)
 
     def __str__(self):
