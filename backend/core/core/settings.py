@@ -67,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://your-frontend.onrender.com',
+    'https://your-frontend-6bxw.onrender.com',
 ]
 
 REST_FRAMEWORK = {
