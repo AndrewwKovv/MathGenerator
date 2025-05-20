@@ -26,7 +26,7 @@ class Answer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', null=True, blank=True)
 
     # Дополнительные поля для хранения данных варианта
-    generated_task_hash = models.CharField(max_length=255, verbose_name='Hash варианта')
+    generated_task_hash = models.CharField(max_length=255, verbose_name='Hash варианта', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Копируем данные из связанного варианта
