@@ -1,0 +1,24 @@
+.wrapper {
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+}
+
+.filters {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.select {
+  width: 30%;
+}
+
+.table {
+  margin-top: 20px;
+  border: 1px solid #ddd; /* Добавляем бордер для таблицы */
+  border-radius: 8px; /* Радиус для углов */
+}

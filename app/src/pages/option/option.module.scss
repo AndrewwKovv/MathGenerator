@@ -29,6 +29,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .answerInput {
@@ -38,8 +39,7 @@
 
 .footer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-around;
   margin-top: 20px;
 }
 
@@ -66,4 +66,14 @@
 
 .hash {
   font-size: 14px;
+}
+
+@media (max-width: 710px) {
+  .taskList {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 }

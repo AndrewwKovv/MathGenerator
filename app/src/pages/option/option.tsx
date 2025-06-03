@@ -26,11 +26,11 @@ export const Option: FC = () => {
   const tasks = useSelector(studentTasksSelector);
   const [generatedTaskId, setGeneratedTaskId] = useState<number | null>(null);
 
-  const [answers, setAnswers] = useState<Record<number, string>>({}); // Хранение ответов пользователя
+  const [answers, setAnswers] = useState<Record<string, string>>({}); // Хранение ответов пользователя
 
   useEffect(() => {
     // Инициализируем пустые ответы для всех заданий
-    const initialAnswers: Record<number, string> = {};
+    const initialAnswers: Record<string, string> = {};
     tasks?.forEach(({ id, amount }) => {
       for (let i = 0; i < amount; i++) {
         initialAnswers[id] = ''; // Устанавливаем пустую строку для каждого задания
@@ -68,8 +68,8 @@ export const Option: FC = () => {
     );
   }
 
-  const handleAnswerChange = (taskId: number, value: string) => {
-    setAnswers((prev) => ({ ...prev, [taskId]: value }));
+  const handleAnswerChange = (uniqueKey: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [uniqueKey]: value }));
   };
 
   const handleSubmit = async () => {
@@ -77,11 +77,16 @@ export const Option: FC = () => {
       alert('Не удалось определить ID варианта. Попробуйте позже.');
       return;
     }
+
     // Преобразуем ответы: если ответ пустой, добавляем дефолтное значение "-"
-    const taskAnswers = Object.entries(answers).map(([taskId, answerText]) => ({
-      taskId: Number(taskId),
-      answerText: answerText.trim() || '-' // Если ответ пустой, подставляем "-"
-    }));
+    const taskAnswers = Object.entries(answers).map(([uniqueKey, answerText]) => {
+      const [taskId] = uniqueKey.split('-'); // Извлекаем taskId из уникального ключа
+      return {
+        taskId: Number(taskId),
+        answerText: answerText.trim() || '-' // Если ответ пустой, подставляем "-"
+      };
+    });
+
     const emptyAnswers = taskAnswers.filter(({ answerText }) => answerText === '-');
     if (emptyAnswers.length > 0) {
       Modal.confirm({
@@ -141,9 +146,9 @@ export const Option: FC = () => {
                       <Input
                         className={styles.answerInput}
                         placeholder="Введите ваш ответ"
-                        value={answers[task.id] || ''}
+                        value={answers[uniqueKey] || ''} // Используем уникальный ключ
                         onChange={(e) => {
-                          handleAnswerChange(task.id, e.target.value);
+                          handleAnswerChange(uniqueKey, e.target.value); // Передаем уникальный ключ
                         }}
                       />
                     </div>
@@ -170,6 +175,9 @@ export const Option: FC = () => {
           }}
         >
           Отправить ответы
+        </Button>
+        <Button className={styles.downloadButton}>
+          Загрузить ответы
         </Button>
       </div>
       <p className={styles.hash}>

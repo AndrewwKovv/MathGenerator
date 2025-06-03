@@ -89,3 +89,9 @@
   color: #888;
   margin-top: 5px;
 }
+
+@media (max-width: 775px) {
+  .wrapper__form {
+    justify-content: center;
+  }
+}

@@ -1,6 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Carousel } from 'antd';
 import { PATHS } from 'config';
 import { Page } from 'widgets';
 import { MathText } from 'shared/components';
@@ -15,6 +14,7 @@ export const VariantsPage: FC = () => {
   const [variants, setVariants] = useState<Variant[]>([]); // Список вариантов
   const [tasks, setTasks] = useState<Task[]>([]); // Список заданий выбранного варианта
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null); // ID выбранного варианта
+  const [isAddingVariant, setIsAddingVariant] = useState(false); // Отображение формы добавления варианта
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -41,9 +41,9 @@ export const VariantsPage: FC = () => {
   return (
     <Page className={styles.wrapper}>
       <h1 className={styles.title}>Мои варианты</h1>
-      <Carousel className={styles.carousel} dots={false} slidesToShow={4}>
+      <div className={styles.scrollContainer}>
         <div
-          className={styles.card}
+          className={`${styles.card} ${styles.addCard}`}
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -57,10 +57,10 @@ export const VariantsPage: FC = () => {
         >
           <button type="button" className={styles.addButton}>+</button>
         </div>
-        {variants?.map((variant) => (
+        {Array.isArray(variants) && variants.map((variant) => (
           <div
             key={variant.id}
-            className={`${styles.card} ${selectedVariant === variant.id ? styles.activeCard : ''}`}
+            className={`${styles.card} ${selectedVariant === variant.id && !isAddingVariant ? styles.activeCard : ''}`}
             role="button"
             tabIndex={0}
             onClick={() => {
@@ -74,16 +74,13 @@ export const VariantsPage: FC = () => {
           >
             <div className={styles.cart__title}>
               <h3>
-                Вариант №
-                {variant.id}
+                {variant?.title || 'Без названия'}
               </h3>
-              <p>
-                {variant.topic?.section_name || 'Без темы'}
-              </p>
+              <p>{variant.topic?.section_name || 'Без темы'}</p>
             </div>
           </div>
         ))}
-      </Carousel>
+      </div>
       <div className={styles.divider} />
       <div className={styles.tasksCarousel}>
         {tasks?.map((task) => (

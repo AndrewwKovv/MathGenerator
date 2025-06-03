@@ -85,6 +85,40 @@
   margin-bottom: var(--indent-size-m);
 }
 
+.buttonPrimary {
+  max-width: 240px;
+  background-color: #3b5bbb !important;
+  border-color: #3b5bbb;
+  color: #fff;
+
+  &:hover {
+    background-color: #fff !important;
+  }
+
+  &:focus {
+    background-color: #3b5bbb;
+    border-color: #3b5bbb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 187, 0.2);
+  }
+}
+.controls {
+  display: flex;
+  justify-content: space-between; /* Размещает элементы по разным сторонам */
+  align-items: center; /* Выравнивает элементы по вертикали */
+  width: 100%; /* Занимает всю ширину контейнера */
+  gap: 16px; /* Добавляет отступ между элементами */
+
+  .select {
+    flex: 1; /* Занимает доступное пространство */
+    max-width: 300px; /* Ограничивает максимальную ширину */
+  }
+
+  .input {
+    flex: 1; /* Занимает доступное пространство */
+    max-width: 300px; /* Ограничивает максимальную ширину */
+  }
+}
+
 @media (max-width: 900px) {
   .templateContainer {
     flex-direction: column;
