@@ -4,10 +4,16 @@ from .serializers import GeneratedTaskSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 class GeneratedTaskViewSet(viewsets.ModelViewSet):
     queryset = GeneratedTask.objects.all()
     serializer_class = GeneratedTaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Возвращаем только те варианты, которые созданы текущим пользователем
+        return GeneratedTask.objects.filter(creator=self.request.user)
 
     def perform_create(self, serializer):
         # Устанавливаем текущего пользователя как создателя варианта

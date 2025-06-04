@@ -1,6 +1,5 @@
 import { type FC, useState } from 'react';
 import { Slider, Typography, message, Select, Input } from 'antd';
-
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
@@ -27,10 +26,14 @@ export const ProfessorPage: FC = () => {
   const tasksSelector = useSelector(selectedTasksSelector); // Получаем выбранные задания из стора
   const hash = generateHash(); // Генерируем хэш-код варианта
 
-  const [selectedSection, setSelectedSection] = useState<string>(TASKS_CONFIGURATION[0]?.section || ''); // Выбранный раздел
+  const [selectedSection, setSelectedSection] = useState<string>(
+    TASKS_CONFIGURATION[0]?.section || ''
+  ); // Выбранный раздел
   const [variantName, setVariantName] = useState<string>(''); // Название варианта
 
-  const section = TASKS_CONFIGURATION.find((sectionItem) => sectionItem.section === selectedSection); // Найти текущий раздел
+  const section = TASKS_CONFIGURATION.find(
+    (sectionItem) => sectionItem.section === selectedSection
+  ); // Найти текущий раздел
   const isTasksPicked = !tasksSelector.length;
 
   const handleGenerateVariant = async () => {
@@ -44,17 +47,27 @@ export const ProfessorPage: FC = () => {
       return;
     }
 
+    // Проверка роли пользователя
+    const isStudent = user?.role === 'student';
+    const trainingKey = isStudent
+      ? Array.from(crypto.getRandomValues(new Uint8Array(78)))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('')
+          .slice(0, 155)
+      : undefined;
+
     try {
       // Отправляем данные на сервер
       await api.post('/generated/', {
-        hash_code: hash, // Хэш-код варианта
-        creator: user?.id, // ID пользователя, который создает вариант
-        title: variantName, // Название варианта
-        topic: selectedSection, // Тема варианта
+        hash_code: hash,
+        creator: user?.id,
+        title: variantName,
+        topic: selectedSection,
         tasks: tasksSelector.map((task) => ({
           id: task.id,
           amount: task.amount
-        }))
+        })),
+        ...(isStudent && { training_key: trainingKey }) // Только если студент
       });
 
       void message.success('Вариант успешно сгенерирован!');
@@ -119,10 +132,12 @@ const Template: FC<ITemplateProps> = ({ template, ...props }) => {
       dispatch(taskActions.removeTask({ id: template.id }));
       return;
     }
-    dispatch(taskActions.editSelectedTask({
-      id: template.id,
-      amount: newValue
-    }));
+    dispatch(
+      taskActions.editSelectedTask({
+        id: template.id,
+        amount: newValue
+      })
+    );
   };
 
   return (

@@ -1,4 +1,5 @@
 import { type Task, type Variant } from 'pages/variants/types';
+import type { IGeneratedTaskData } from './types';
 import { api } from './authApi';
 
 // Получение списка вариантов
@@ -13,9 +14,9 @@ export const getTasksByVariant = async (variantId: number): Promise<Task[]> => {
   return response.data.tasks; // Предполагается, что API возвращает задания в поле "tasks"
 };
 
-export const getGeneratedTaskIdByHash = async (hash: string): Promise<number | null> => {
+export const getGeneratedTaskIdByHash = async (hash: string): Promise<IGeneratedTaskData | null> => {
   const response = await api.get(`/generated/by-hash/?hash=${hash}`);
-  return response.data?.id ?? null;
+  return response.data ?? null;
 };
 
 export const submitTaskAnswers = async (

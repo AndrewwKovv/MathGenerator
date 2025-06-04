@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Group, TaskStatus
+from .serializers import UserSerializer, GroupSerializer, TaskStatusSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, NotFound, AuthenticationFailed
@@ -68,3 +68,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
         serializer.save()  # Сохраняем изменения
         return Response(serializer.data)
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+class TaskStatusViewSet(viewsets.ModelViewSet):
+    queryset = TaskStatus.objects.all()
+    serializer_class = TaskStatusSerializer
+    permission_classes = [IsAuthenticated]
