@@ -1,41 +1,67 @@
 import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Modal, message } from 'antd';
 import { PATHS } from 'config';
 import { Page } from 'widgets';
 import { MathText } from 'shared/components';
 import { BlockMath } from 'react-katex';
-import { getVariants, getTasksByVariant } from 'shared/api/variantsApi';
+import { getVariants, getTasksByVariant, deleteVariant } from 'shared/api/variantsApi';
 
 import styles from './variants.module.scss';
 import { type Task, type Variant } from './types';
 
 export const VariantsPage: FC = () => {
   const navigate = useNavigate();
-  const [variants, setVariants] = useState<Variant[]>([]); // Список вариантов
-  const [tasks, setTasks] = useState<Task[]>([]); // Список заданий выбранного варианта
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(null); // ID выбранного варианта
-  const [isAddingVariant, setIsAddingVariant] = useState(false); // Отображение формы добавления варианта
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+  const [isAddingVariant, setIsAddingVariant] = useState(false);
 
   useEffect(() => {
-    const fetchVariants = async () => {
-      try {
-        const data = await getVariants(); // Получаем список вариантов
-        setVariants(data);
-      } catch (error) {
-        console.error('Ошибка при загрузке вариантов:', error);
-      }
-    };
     void fetchVariants();
   }, []);
 
-  const handleVariantClick = async (variantId: number) => {
-    setSelectedVariant(variantId); // Устанавливаем выбранный вариант
+  const fetchVariants = async () => {
     try {
-      const data = await getTasksByVariant(variantId); // Получаем задания для выбранного варианта
-      setTasks(data); // Устанавливаем задания
+      const data = await getVariants();
+      setVariants(data);
+    } catch (error) {
+      console.error('Ошибка при загрузке вариантов:', error);
+    }
+  };
+
+  const handleVariantClick = async (variantId: number) => {
+    setSelectedVariant(variantId);
+    try {
+      const data = await getTasksByVariant(variantId);
+      setTasks(data);
     } catch (error) {
       console.error('Ошибка при загрузке заданий:', error);
     }
+  };
+
+  const handleDeleteVariant = (variantId: number) => {
+    Modal.confirm({
+      title: 'Удаление варианта',
+      content: 'Вы уверены, что хотите удалить этот вариант?',
+      okText: 'Удалить',
+      okType: 'danger',
+      cancelText: 'Отмена',
+      onOk: async () => {
+        try {
+          await deleteVariant(variantId);
+          void message.success('Вариант удалён');
+          await fetchVariants();
+          if (selectedVariant === variantId) {
+            setTasks([]);
+            setSelectedVariant(null);
+          }
+        } catch (error) {
+          console.error('Ошибка при удалении варианта:', error);
+          void message.error('Не удалось удалить вариант');
+        }
+      }
+    });
   };
 
   return (
@@ -57,6 +83,7 @@ export const VariantsPage: FC = () => {
         >
           <button type="button" className={styles.addButton}>+</button>
         </div>
+
         {Array.isArray(variants) && variants.map((variant) => (
           <div
             key={variant.id}
@@ -66,6 +93,9 @@ export const VariantsPage: FC = () => {
             onClick={() => {
               void handleVariantClick(variant.id);
             }}
+            onDoubleClick={() => {
+              handleDeleteVariant(variant.id);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 void handleVariantClick(variant.id);
@@ -73,15 +103,15 @@ export const VariantsPage: FC = () => {
             }}
           >
             <div className={styles.cart__title}>
-              <h4>
-                {variant?.title || 'Без названия'}
-              </h4>
+              <h4>{variant?.title || 'Без названия'}</h4>
               <p>{variant.topic?.section_name || 'Без темы'}</p>
             </div>
           </div>
         ))}
       </div>
+
       <div className={styles.divider} />
+
       <div className={styles.tasksCarousel}>
         {tasks?.map((task) => (
           <div key={task.id} className={styles.taskCard}>

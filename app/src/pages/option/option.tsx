@@ -61,7 +61,7 @@ export const Option: FC = () => {
           const isCreator = data.creator?.full_name === name;
 
           if (isStudent && isCreator && data.training_key) {
-            setUserHashLocal(userHash + data.training_key);
+            setUserHashLocal(String(userHash) + String(data.training_key));
           }
         } else {
           console.error('Вариант с указанным hash не найден.');

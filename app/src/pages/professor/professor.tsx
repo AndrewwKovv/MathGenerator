@@ -51,9 +51,9 @@ export const ProfessorPage: FC = () => {
     const isStudent = user?.role === 'student';
     const trainingKey = isStudent
       ? Array.from(crypto.getRandomValues(new Uint8Array(78)))
-          .map((b) => b.toString(16).padStart(2, '0'))
-          .join('')
-          .slice(0, 155)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+        .slice(0, 155)
       : undefined;
 
     try {
