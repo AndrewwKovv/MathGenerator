@@ -101,7 +101,11 @@ export const TaskStatusPage: FC = () => {
       title: 'Группа',
       dataIndex: ['user', 'group', 'name'],
       key: 'group',
-      render: (groupName: string) => groupName || '-'
+      render: () => {
+        if (!selectedGroup) return '-';
+        const group = groups.find((g) => g.id === selectedGroup);
+        return group ? group.name : '-';
+      }
     },
     {
       title: 'Вариант',

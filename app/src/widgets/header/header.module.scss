@@ -104,4 +104,12 @@
   .menu.open {
     display: flex !important;
   }
+
+  .left {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    justify-content: space-between;
+  }
 }

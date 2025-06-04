@@ -1,94 +1,56 @@
-import { type FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Carousel, Button } from 'antd';
+import { BlockMath } from 'react-katex';
+import { Button } from 'antd';
 import { Page } from 'widgets';
 import { MathText } from 'shared/components';
-import { BlockMath } from 'react-katex';
 import { Parser } from 'core';
+import { getAnswerByHashAndUser } from 'shared/api/answersApi';
 import styles from './myAnswers.module.scss';
+import { type Answer, type TaskAnswer, type Task } from './types';
 
-interface TaskAnswer {
-  taskId: number
-  title: string
-  data_task: string
-  answerText: string
-}
-
-export const MyAnswersPage: FC = () => {
+export const MyAnswersPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [taskAnswers, setTaskAnswers] = useState<TaskAnswer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const queryParams = new URLSearchParams(location.search);
-  const hashCode = queryParams.get('hash_code');
-  const userId = queryParams.get('user_id');
+  const hashCode = 'MU4yfDROM3w1TjE=';
+  const userId = '3';
 
   useEffect(() => {
-    const fetchTaskAnswers = async () => {
+    console.log('useEffect ran');
+    const queryParams = new URLSearchParams(location.search);
+    if (!hashCode || !userId) {
+      console.log('Missing hashCode or userId');
+      setLoading(false);
+      return;
+    }
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data: TaskAnswer[] = [
-          {
-            taskId: 1,
-            title: 'Метод замены переменной',
-            data_task: '\\int{sin(4x)}dx',
-            answerText: 'cos2x'
-          },
-          {
-            taskId: 1,
-            title: 'Метод замены переменной',
-            data_task: '\\int{sin(10)}dx',
-            answerText: '1'
-          },
-          {
-            taskId: 4,
-            title: 'Интегрирование рациональных дробей',
-            data_task: '\\int\\frac{{(x + [@|even]})dx}{x^[2:10] + [@|even]x + [@|even]}',
-            answerText: '2'
-          },
-          {
-            taskId: 4,
-            title: 'Интегрирование рациональных дробей',
-            data_task: '\\int\\frac{{(x + [@|even]})dx}{x^[2:10] + [@|even]x + [@|even]}',
-            answerText: '3'
-          },
-          {
-            taskId: 4,
-            title: 'Интегрирование рациональных дробей',
-            data_task: '\\int\\frac{{(x + [@|even]})dx}{x^[2:10] + [@|even]x + [@|even]}',
-            answerText: '4'
-          },
-          {
-            taskId: 5,
-            title: 'Универсальная Тригонометрическая подстановка',
-            data_task: '\\int\\frac{dx}{[@|odd]sinx + [@|even]cosx + [@|aboveZero]}',
-            answerText: '5'
-          }
-        ];
-        setTaskAnswers(data);
+        const answer = await getAnswerByHashAndUser(hashCode, userId);
+        setTaskAnswers(answer.task_answers);
+        setTasks(answer.generated_task.tasks);
       } catch (error) {
-        console.error('Ошибка при загрузке данных:', error);
+        console.error('Ошибка при загрузке ответа:', error);
       } finally {
         setLoading(false);
       }
     };
+    void fetchData();
+  }, [location.search]);
 
-    void fetchTaskAnswers();
-  }, [hashCode, userId]);
-
-  if (loading) {
-    return <Page className={styles.wrapper}>Загрузка...</Page>;
-  }
+  if (loading) return <Page className={styles.wrapper}>Загрузка...</Page>;
 
   if (taskAnswers.length === 0) {
     return (
       <Page className={styles.wrapper}>
         <h1 className={styles.title}>Мои решения</h1>
         <p className={styles.noAnswers}>У вас пока нет решений.</p>
-        {hashCode && userId && (
-          <Button onClick={() => { navigate(-1); }}>Назад</Button>
-        )}
+        <Button onClick={() => { navigate(-1); }}>Назад</Button>
       </Page>
     );
   }
@@ -96,38 +58,39 @@ export const MyAnswersPage: FC = () => {
   return (
     <Page className={styles.wrapper}>
       <h1 className={styles.title}>Решение</h1>
-      {hashCode && userId && (
-        <Button onClick={() => { navigate(-1); }} className={styles.backButton}>
-          Назад
-        </Button>
-      )}
+      <Button onClick={() => { navigate(-1); }} className={styles.backButton}>Назад</Button>
       <div className={styles.tasksCarousel}>
-        {taskAnswers.map((taskAnswer) => (
-          <div key={taskAnswer.taskId} className={styles.taskCard}>
-            <div className={styles.taskHeader}>
-              <MathText type="secondary">
-                {`${taskAnswer.title}`}
-              </MathText>
+        {tasks.map((task) => {
+          // Считаем сколько ответов есть на это задание
+          const answersForTask = taskAnswers.filter((a) => a.taskId === task.id);
+          // Если нет вариантов - создаём минимум 1 вариант
+          const variantsCount = answersForTask.length || 1;
+
+          return (
+            <div key={task.id} className={styles.taskVariantsWrapper}>
+              {[...Array(variantsCount)].map((_, variantIndex) => {
+                const answer = answersForTask[variantIndex] ?? { answerText: '-' };
+                return (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <div key={`${task.id}-${variantIndex}`} className={styles.taskCard}>
+                    <div className={styles.taskHeader}>
+                      <MathText type="secondary">{task.title}</MathText>
+                    </div>
+                    <div className={styles.taskTitle}>
+                      <div className={styles.taskContent}>
+                        <BlockMath>{Parser.parse(task.data_task, '', variantIndex)}</BlockMath>
+                      </div>
+                      <div className={styles.taskFooter}>
+                        Ответ:
+                        <p className={styles.answer}>{answer.answerText}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className={styles.taskTitle}>
-              <div className={styles.taskContent}>
-                <BlockMath>
-                  {Parser.parse(taskAnswer.data_task, '', taskAnswer.taskId * 10)}
-                </BlockMath>
-              </div>
-              <div className={styles.taskFooter}>
-                <p className={styles.answer}>
-                  {taskAnswer.answerText}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className={styles.downloadContainer}>
-        <Button className={styles.downloadButton}>
-          Скачать
-        </Button>
+          );
+        })}
       </div>
     </Page>
   );

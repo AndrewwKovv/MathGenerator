@@ -1,3 +1,3 @@
 export const PROJECT_INFO = {
-  NAME: 'Math Generator'
+  NAME: 'MathGenerator'
 } as const;

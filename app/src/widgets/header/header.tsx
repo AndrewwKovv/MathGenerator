@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 
@@ -13,6 +13,17 @@ export const Header: FC = () => {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Состояние для выпадающего меню
   const [isBurgerOpen, setIsBurgerOpen] = useState(false); // Состояние для бургер-меню
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -51,28 +62,21 @@ export const Header: FC = () => {
             {user?.role === 'teacher' ? (
               <>
                 <Link to={PATHS.THEMES}>
-                  <Button className={styles.themesButton}>Темы</Button>
+                  <Button>Темы</Button>
                 </Link>
                 <Link to={PATHS.TASK}>
-                  <Button className={styles.tasksButton}>Задания</Button>
+                  <Button>Задания</Button>
                 </Link>
               </>
             ) : (
               <Link to={PATHS.GET_VARIANT}>
-                <Button className={styles.variantsButton}>Получить вариант</Button>
+                <Button>Получить вариант</Button>
               </Link>
             )}
-            <Link to={PATHS.ABOUT}>
-              <Button className={styles.aboutButton}>О программе</Button>
-            </Link>
-          </nav>
-        </div>
-        <div className={styles.right}>
-          {user ? (
-            <div className={styles.account}>
-              <Button onClick={toggleDropdown}>Аккаунт</Button>
-              {isDropdownOpen && (
-                <div className={styles.dropdown}>
+
+            {user ? ( // eslint-disable-line no-nested-ternary
+              windowWidth <= 755 ? (
+                <>
                   {user.role !== 'teacher' && (
                     <Link to={PATHS.MY_ANSWERS}>
                       <Button>Мои решения</Button>
@@ -87,9 +91,38 @@ export const Header: FC = () => {
                     <Button>Настройки</Button>
                   </Link>
                   <Button onClick={handleLogout}>Выход</Button>
-                </div>
-              )}
-            </div>
+                </>
+              ) : null
+            ) : (
+              <div> </div>
+            )}
+          </nav>
+        </div>
+        <div className={styles.right}>
+          {user ? ( // eslint-disable-line no-nested-ternary
+            windowWidth > 755 ? (
+              <div className={styles.account}>
+                <Button onClick={toggleDropdown}>Аккаунт</Button>
+                {isDropdownOpen && (
+                  <div className={styles.dropdown}>
+                    {user.role !== 'teacher' && (
+                      <Link to={PATHS.MY_ANSWERS}>
+                        <Button>Мои решения</Button>
+                      </Link>
+                    )}
+                    {user.role === 'teacher' && (
+                      <Link to={PATHS.TASK_STATUS}>
+                        <Button>Статус выполнения</Button>
+                      </Link>
+                    )}
+                    <Link to={PATHS.PROFILE}>
+                      <Button>Настройки</Button>
+                    </Link>
+                    <Button onClick={handleLogout}>Выход</Button>
+                  </div>
+                )}
+              </div>
+            ) : null
           ) : (
             <Link to={PATHS.LOGIN}>
               <Button>Вход</Button>

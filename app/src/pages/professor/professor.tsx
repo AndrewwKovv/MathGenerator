@@ -50,7 +50,7 @@ export const ProfessorPage: FC = () => {
         hash_code: hash, // Хэш-код варианта
         creator: user?.id, // ID пользователя, который создает вариант
         title: variantName, // Название варианта
-        topic: section?.section_name, // Тема варианта
+        topic: selectedSection, // Тема варианта
         tasks: tasksSelector.map((task) => ({
           id: task.id,
           amount: task.amount

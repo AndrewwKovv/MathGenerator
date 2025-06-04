@@ -75,7 +75,7 @@ export const AppRouter: FC = () => {
     },
     {
       path: PATHS.TASKS,
-      element: user ? <TasksPage /> : <Navigate to={PATHS.LOGIN} replace />
+      element: user ? <ProfessorPage /> : <Navigate to={PATHS.LOGIN} replace />
     },
     {
       path: PATHS.THEMES,

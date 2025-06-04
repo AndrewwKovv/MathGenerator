@@ -87,7 +87,7 @@
 
 .buttonPrimary {
   max-width: 240px;
-  background-color: #3b5bbb !important;
+  background-color: #3b5bbb;
   border-color: #3b5bbb;
   color: #fff;
 
@@ -99,6 +99,12 @@
     background-color: #3b5bbb;
     border-color: #3b5bbb;
     box-shadow: 0 0 0 2px rgba(59, 91, 187, 0.2);
+  }
+
+  &:active {
+    background-color: #3b5bbb !important;
+    border-color: #3b5bbb;
+    color: #fff;
   }
 }
 .controls {

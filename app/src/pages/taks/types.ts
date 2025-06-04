@@ -8,5 +8,6 @@ export interface Task {
   id: number;
   title: string;
   view: string;
+  data_task: string;
   topics: Topic[];
 }

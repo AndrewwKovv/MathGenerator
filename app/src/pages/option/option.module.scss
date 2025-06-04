@@ -39,8 +39,9 @@
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
-  margin-top: 20px;
+  margin: 10px 0;
 }
 
 .taskList {

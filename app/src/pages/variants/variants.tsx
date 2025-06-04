@@ -73,9 +73,9 @@ export const VariantsPage: FC = () => {
             }}
           >
             <div className={styles.cart__title}>
-              <h3>
+              <h4>
                 {variant?.title || 'Без названия'}
-              </h3>
+              </h4>
               <p>{variant.topic?.section_name || 'Без темы'}</p>
             </div>
           </div>
