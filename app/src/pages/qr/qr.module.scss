@@ -14,13 +14,36 @@
   }
 }
 
+.buttonPrimary {
+  max-width: 240px;
+  background-color: #3b5bbb;
+  border-color: #3b5bbb;
+  color: #fff;
+
+  &:hover {
+    background-color: #fff !important;
+  }
+
+  &:focus {
+    background-color: #3b5bbb;
+    border-color: #3b5bbb;
+    box-shadow: 0 0 0 2px rgba(59, 91, 187, 0.2);
+  }
+
+  &:active {
+    background-color: #3b5bbb !important;
+    border-color: #3b5bbb;
+    color: #fff;
+  }
+}
+
 .pathButtons {
   display: flex;
   gap: var(--indent-size-s)
 }
 
 .notificationForm {
-  margin-top: 40px;
+  margin-bottom: 80px;
 
   h2 {
     margin-bottom: 20px;

@@ -162,9 +162,9 @@ export const TaskPage: FC = () => {
                   />
                   <Input.TextArea
                     className={styles.editTextarea}
-                    value={editingTask.view}
+                    value={editingTask.data_task}
                     onChange={(e) => {
-                      setEditingTask({ ...editingTask, view: e.target.value });
+                      setEditingTask({ ...editingTask, data_task: e.target.value });
                     }}
                     placeholder="Математическое представление"
                   />

@@ -61,21 +61,29 @@ export const QRPage: FC = () => {
       void message.error('Выберите группу для отправки уведомления');
       return;
     }
-
+    if (!hash) {
+      void message.error('Хэш варианта отсутствует');
+      return;
+    }
     setIsSending(true);
-
     try {
+      // Отправляем уведомление
       await api.post('/notifications/send/', {
         groupId: selectedGroup,
         userIds: selectedUsers.length > 0 ? selectedUsers : null, // Если пользователей не выбрано, отправляем всем
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         message: `Вам назначен вариант ${hash}`
       });
-
-      void message.success('Уведомление успешно отправлено');
+      // Обновляем статус задания для пользователей
+      await api.post('/status-task/', {
+        userIds: selectedUsers.length > 0 ? selectedUsers : null, // Если пользователей не выбрано, обновляем статус для всех
+        hashCode: hash, // Хэш варианта
+        status: 'not_started', // Устанавливаем статус "не начато"
+        groupId: selectedGroup // Передаем ID группы
+      });
+      void message.success('Уведомление успешно отправлено, статус заданий обновлен');
     } catch (error) {
-      console.error('Ошибка при отправке уведомления:', error);
-      void message.error('Не удалось отправить уведомление');
+      console.error('Ошибка при отправке уведомления или обновлении статуса:', error);
+      void message.error('Не удалось отправить уведомление или обновить статус');
     } finally {
       setIsSending(false);
     }
@@ -166,7 +174,7 @@ export const QRPage: FC = () => {
               />
             </Form.Item>
             <Button
-              type="primary"
+              className={styles.buttonPrimary}
               onClick={() => {
                 void handleSendNotification();
               }}

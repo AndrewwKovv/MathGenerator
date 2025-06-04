@@ -1,115 +1,93 @@
-import { type FC, useEffect, useState } from 'react';
-import { Carousel } from 'antd';
-import { Page } from 'widgets';
-import { getAnswers } from 'shared/api/answersApi';
-import { MathText } from 'shared/components';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BlockMath } from 'react-katex';
-import { SHA512 } from 'crypto-js';
+import { Button } from 'antd';
+import { Page } from 'widgets';
+import { MathText } from 'shared/components';
 import { Parser } from 'core';
-import { useAuth } from 'shared/context/authContext'; // Импортируем контекст авторизации
-import { type Answer } from './types';
+import { getAnswerByHashAndUser } from 'shared/api/answersApi';
 import styles from './myAnswers.module.scss';
+import { type Answer, type TaskAnswer, type Task } from './types';
 
-export const MyAnswersPage: FC = () => {
-  const { user } = useAuth(); // Получаем данные авторизованного пользователя
-  const [answers, setAnswers] = useState<Answer[]>([]); // Список ответов
-  const [selectedTaskAnswers, setSelectedTaskAnswers] = useState<Answer['task_answers']>([]); // Ответы на задания выбранного ответа
-  const [loading, setLoading] = useState<boolean>(true);
-  const [userHash, setUserHash] = useState<string>(''); // Хэш пользователя
+export const MyAnswersPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [taskAnswers, setTaskAnswers] = useState<TaskAnswer[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const queryParams = new URLSearchParams(location.search);
+  const hashCode = 'MU4yfDROM3w1TjE=';
+  const userId = '3';
 
   useEffect(() => {
-    // Генерация userHash на основе имени пользователя и группы
-    if (user) {
-      const nameWithGroup = `${user.full_name} ${String(user.group?.name)}`;
-      const hashedName = SHA512(nameWithGroup).toString(); // Генерируем хэш
-      setUserHash(hashedName);
+    console.log('useEffect ran');
+    const queryParams = new URLSearchParams(location.search);
+    if (!hashCode || !userId) {
+      console.log('Missing hashCode or userId');
+      setLoading(false);
+      return;
     }
-  }, [user]);
-
-  useEffect(() => {
-    // Получение списка решенных вариантов
-    const fetchAnswers = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await getAnswers();
-        setAnswers(data); // Устанавливаем ответы
-        if (data.length > 0) {
-          setSelectedTaskAnswers(data[0].task_answers); // По умолчанию выбираем первый вариант
-        }
+        const answer = await getAnswerByHashAndUser(hashCode, userId);
+        setTaskAnswers(answer.task_answers);
+        setTasks(answer.generated_task.tasks);
       } catch (error) {
-        console.error('Ошибка при загрузке ответов:', error);
+        console.error('Ошибка при загрузке ответа:', error);
       } finally {
         setLoading(false);
       }
     };
-    void fetchAnswers();
-  }, []);
+    void fetchData();
+  }, [location.search]);
 
-  const handleAnswerClick = (taskAnswers: Answer['task_answers']) => {
-    setSelectedTaskAnswers(taskAnswers); // Устанавливаем ответы на задания выбранного ответа
-  };
+  if (loading) return <Page className={styles.wrapper}>Загрузка...</Page>;
 
-  if (loading) {
-    return <Page className={styles.wrapper}>Загрузка...</Page>;
-  }
-
-  if (answers.length === 0) {
+  if (taskAnswers.length === 0) {
     return (
       <Page className={styles.wrapper}>
         <h1 className={styles.title}>Мои решения</h1>
         <p className={styles.noAnswers}>У вас пока нет решений.</p>
+        <Button onClick={() => { navigate(-1); }}>Назад</Button>
       </Page>
     );
   }
 
   return (
     <Page className={styles.wrapper}>
-      <h1 className={styles.title}>Мои решения</h1>
-      <Carousel className={styles.carousel} dots={false} slidesToShow={4}>
-        {answers.map((answer) => (
-          <div
-            key={answer.id}
-            className={styles.card}
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              handleAnswerClick(answer.task_answers);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleAnswerClick(answer.task_answers);
-              }
-            }}
-          >
-            <div className={styles.cart__title}>
-              <h3>
-                Вариант №
-              </h3>
-              <p>
-                {answer.generated_task_hash}
-              </p>
-            </div>
-          </div>
-        ))}
-      </Carousel>
-      <div className={styles.divider} />
+      <h1 className={styles.title}>Решение</h1>
+      <Button onClick={() => { navigate(-1); }} className={styles.backButton}>Назад</Button>
       <div className={styles.tasksCarousel}>
-        {selectedTaskAnswers.map((taskAnswer, index) => {
-          const task = answers
-            .flatMap((answer) => answer.task_answers)
-            .find((t) => t.taskId === taskAnswer.taskId);
-
-          if (!task) {
-            return null;
-          }
-
-          const parsedTask = Parser.parse(taskAnswer.answerText, userHash, index * 10);
+        {tasks.map((task) => {
+          // Считаем сколько ответов есть на это задание
+          const answersForTask = taskAnswers.filter((a) => a.taskId === task.id);
+          // Если нет вариантов - создаём минимум 1 вариант
+          const variantsCount = answersForTask.length || 1;
 
           return (
-            <div key={taskAnswer.taskId} className={styles.taskCard}>
-              <p>
-                <MathText type="secondary">{`Задание ${taskAnswer.taskId}`}</MathText>
-              </p>
-              <BlockMath>{parsedTask}</BlockMath>
+            <div key={task.id} className={styles.taskVariantsWrapper}>
+              {[...Array(variantsCount)].map((_, variantIndex) => {
+                const answer = answersForTask[variantIndex] ?? { answerText: '-' };
+                return (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <div key={`${task.id}-${variantIndex}`} className={styles.taskCard}>
+                    <div className={styles.taskHeader}>
+                      <MathText type="secondary">{task.title}</MathText>
+                    </div>
+                    <div className={styles.taskTitle}>
+                      <div className={styles.taskContent}>
+                        <BlockMath>{Parser.parse(task.data_task, '', variantIndex)}</BlockMath>
+                      </div>
+                      <div className={styles.taskFooter}>
+                        Ответ:
+                        <p className={styles.answer}>{answer.answerText}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           );
         })}

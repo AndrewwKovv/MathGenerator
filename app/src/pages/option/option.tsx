@@ -2,7 +2,9 @@ import { type FC, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BlockMath } from 'react-katex';
 import { useSelector } from 'react-redux';
-import { Input, Button, Modal } from 'antd';
+import { Input, Button, Modal, Upload, message, List } from 'antd';
+import type { UploadFile } from 'antd/es/upload/interface';
+import { UploadOutlined } from '@ant-design/icons';
 
 import { Page } from 'widgets';
 import { Parser } from 'core';
@@ -14,8 +16,7 @@ import {
 } from 'store/student';
 import { MathText } from 'shared/components';
 import { type ITask } from 'config';
-import { api } from 'shared/api/authApi';
-
+import { getGeneratedTaskIdByHash, submitTaskAnswers, uploadImage, getImagesByHash } from 'shared/api/optionApi';
 import { TASKS } from './constants';
 import styles from './option.module.scss';
 
@@ -24,39 +25,55 @@ export const Option: FC = () => {
   const hash = useSelector(studentHashSelector);
   const userHash = useSelector(studentUserHashSelector);
   const tasks = useSelector(studentTasksSelector);
+
   const [generatedTaskId, setGeneratedTaskId] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
-  const [answers, setAnswers] = useState<Record<number, string>>({}); // Хранение ответов пользователя
-
+  // Инициализация пустых ответов
   useEffect(() => {
-    // Инициализируем пустые ответы для всех заданий
-    const initialAnswers: Record<number, string> = {};
+    const initialAnswers: Record<string, string> = {};
     tasks?.forEach(({ id, amount }) => {
       for (let i = 0; i < amount; i++) {
-        initialAnswers[id] = ''; // Устанавливаем пустую строку для каждого задания
+        const key = `${id}-${i}`; // Уникальный ключ для каждого задания и варианта
+        initialAnswers[key] = '';
       }
     });
     setAnswers(initialAnswers);
   }, [tasks]);
 
+  // Получение generatedTaskId по hash
   useEffect(() => {
     const fetchGeneratedTaskId = async () => {
+      if (!hash) return;
       try {
-        if (hash) { // Проверяем, что hash не null
-          const response = await api.get(`/generated/by-hash/?hash=${hash}`);
-          if (response.data?.id) { // Проверяем, что в ответе есть id
-            setGeneratedTaskId(response.data.id); // Сохраняем ID варианта
-          } else {
-            console.error('Вариант с указанным hash не найден.');
-          }
+        const id = await getGeneratedTaskIdByHash(hash);
+        if (id) {
+          setGeneratedTaskId(id);
+        } else {
+          console.error('Вариант с указанным hash не найден.');
         }
       } catch (error) {
         console.error('Ошибка при получении ID варианта:', error);
       }
     };
-    if (hash) {
-      void fetchGeneratedTaskId();
-    }
+
+    void fetchGeneratedTaskId();
+  }, [hash]);
+
+  // Получение загруженных изображений
+  useEffect(() => {
+    const fetchUploadedImages = async () => {
+      if (!hash) return;
+      try {
+        const images = await getImagesByHash(hash);
+        setUploadedImages(images);
+      } catch (error) {
+        console.error('Ошибка при загрузке изображений:', error);
+      }
+    };
+    void fetchUploadedImages();
   }, [hash]);
 
   if (!name || !hash || !userHash || !tasks) {
@@ -68,8 +85,8 @@ export const Option: FC = () => {
     );
   }
 
-  const handleAnswerChange = (taskId: number, value: string) => {
-    setAnswers((prev) => ({ ...prev, [taskId]: value }));
+  const handleAnswerChange = (uniqueKey: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [uniqueKey]: value }));
   };
 
   const handleSubmit = async () => {
@@ -77,11 +94,16 @@ export const Option: FC = () => {
       alert('Не удалось определить ID варианта. Попробуйте позже.');
       return;
     }
+
     // Преобразуем ответы: если ответ пустой, добавляем дефолтное значение "-"
-    const taskAnswers = Object.entries(answers).map(([taskId, answerText]) => ({
-      taskId: Number(taskId),
-      answerText: answerText.trim() || '-' // Если ответ пустой, подставляем "-"
-    }));
+    const taskAnswers = Object.entries(answers).map(([uniqueKey, answerText]) => {
+      const [taskId] = uniqueKey.split('-'); // Извлекаем taskId из ключа
+      return {
+        taskId: Number(taskId),
+        answerText: answerText.trim() || '-'
+      };
+    });
+
     const emptyAnswers = taskAnswers.filter(({ answerText }) => answerText === '-');
     if (emptyAnswers.length > 0) {
       Modal.confirm({
@@ -90,36 +112,38 @@ export const Option: FC = () => {
         okText: 'Отправить',
         cancelText: 'Отмена',
         onOk: async () => {
-          await submitAnswers(taskAnswers); // Отправляем ответы с заполненными пустыми полями
+          await submitTaskAnswers(generatedTaskId, name, taskAnswers);
+          alert('Ответы успешно отправлены!');
         }
       });
     } else {
-      // Если все ответы заполнены, отправляем их
-      await submitAnswers(taskAnswers);
+      await submitTaskAnswers(generatedTaskId, name, taskAnswers);
+      alert('Ответы успешно отправлены!');
     }
   };
 
-  const submitAnswers = async (taskAnswers: { taskId: number, answerText: string }[]) => {
-    try {
-      await api.post('/answers/submit-solution/', {
-        generatedTaskId: generatedTaskId, // Передаем ID варианта
-        fullName: name,
-        taskAnswers: taskAnswers
-      });
-      alert('Ответы успешно отправлены!');
-    } catch (error) {
-      console.error('Ошибка при отправке ответов:', error);
-      alert('Не удалось отправить ответы.');
+  const handleImageUpload = async (file: File) => {
+    if (!hash) {
+      void message.error('Не удалось определить hash пользователя');
+      return false;
     }
+    try {
+      await uploadImage(file, hash);
+      void message.success(`${file.name} успешно загружен`);
+      setUploadedImages((prev) => [...prev, file.name]);
+    } catch (error) {
+      console.error('Ошибка при загрузке файла:', error);
+      void message.error(`Ошибка при загрузке ${file.name}`);
+    }
+    return false; // чтобы antd не загружал автоматически
   };
 
   return (
     <Page className={styles.page}>
       <div className={styles.header}>
-        <p className={styles.user}>
-          {name}
-        </p>
+        <p className={styles.user}>{name}</p>
       </div>
+
       <ol className={styles.list}>
         {tasks.map(({ id, amount }, index) => {
           const taskVariants = new Array<ITask>(amount).fill(
@@ -127,7 +151,7 @@ export const Option: FC = () => {
           );
 
           return taskVariants.map((task, taskIndex) => {
-            const uniqueKey = `${task.id}-${index}-${taskIndex}`; // Генерируем уникальный ключ
+            const uniqueKey = `${task.id}-${taskIndex}`;
 
             return (
               <li key={uniqueKey} className={styles.listItem}>
@@ -141,9 +165,9 @@ export const Option: FC = () => {
                       <Input
                         className={styles.answerInput}
                         placeholder="Введите ваш ответ"
-                        value={answers[task.id] || ''}
+                        value={answers[uniqueKey] || ''}
                         onChange={(e) => {
-                          handleAnswerChange(task.id, e.target.value);
+                          handleAnswerChange(uniqueKey, e.target.value);
                         }}
                       />
                     </div>
@@ -162,6 +186,7 @@ export const Option: FC = () => {
           });
         })}
       </ol>
+
       <div className={styles.footer}>
         <Button
           className={styles.submitButton}
@@ -171,10 +196,31 @@ export const Option: FC = () => {
         >
           Отправить ответы
         </Button>
+
+        <Upload
+          beforeUpload={async (file) => {
+            await handleImageUpload(file);
+            return false;
+          }}
+          showUploadList={false}
+          multiple={false}
+        >
+          <Button icon={<UploadOutlined />}>Загрузить изображение</Button>
+        </Upload>
       </div>
+
+      {uploadedImages.length > 0 && (
+        <List
+          header="Загруженные изображения"
+          bordered
+          dataSource={uploadedImages}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+          className={styles.uploadedImageList}
+        />
+      )}
+
       <p className={styles.hash}>
         Код варианта:
-        {' '}
         <strong>{hash}</strong>
       </p>
     </Page>

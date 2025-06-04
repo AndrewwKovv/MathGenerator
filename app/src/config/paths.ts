@@ -2,6 +2,7 @@ export const PATHS = {
   HOME: '/',
   PROFESSOR: '/professor',
   PROFESSOR_OPTION: '/professor/:option',
+  PROFESSOR_TASK: '/professors/integrals',
   STUDENT: '/student',
   STUDENT_OPTION: '/student/:option',
   OPTION: '/option',
@@ -15,5 +16,6 @@ export const PATHS = {
   ADD_TASK: '/add-task',
   THEMES: '/themes',
   PROFILE: '/profile',
+  TASK_STATUS: '/taskstatus',
   TASK: '/task'
 } as const;

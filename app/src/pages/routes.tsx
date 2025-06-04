@@ -19,6 +19,7 @@ import { ThemesPage } from './themes';
 import { AddTaksPage } from './addTask';
 import { ProfilePage } from './profile';
 import { TaskPage } from './taks';
+import { TaskStatusPage } from './taskStatus';
 
 export const AppRouter: FC = () => {
   const { user } = useAuth();
@@ -74,7 +75,7 @@ export const AppRouter: FC = () => {
     },
     {
       path: PATHS.TASKS,
-      element: user ? <TasksPage /> : <Navigate to={PATHS.LOGIN} replace />
+      element: user ? <ProfessorPage /> : <Navigate to={PATHS.LOGIN} replace />
     },
     {
       path: PATHS.THEMES,
@@ -83,6 +84,10 @@ export const AppRouter: FC = () => {
     {
       path: PATHS.ADD_TASK,
       element: user?.role === 'teacher' ? <AddTaksPage /> : <Navigate to={PATHS.LOGIN} replace />
+    },
+    {
+      path: PATHS.TASK_STATUS,
+      element: user?.role === 'teacher' ? <TaskStatusPage /> : <Navigate to={PATHS.LOGIN} replace />
     },
     {
       path: PATHS.TASK,

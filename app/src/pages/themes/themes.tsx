@@ -1,5 +1,4 @@
 import { type FC, useEffect, useState } from 'react';
-import { Carousel } from 'antd';
 import { Page } from 'widgets';
 import { MathText } from 'shared/components';
 import { BlockMath } from 'react-katex';
@@ -52,9 +51,9 @@ export const ThemesPage: FC = () => {
   return (
     <Page className={styles.wrapper}>
       <h1 className={styles.title}>Темы заданий</h1>
-      <Carousel className={styles.carousel} dots={false} slidesToShow={5}>
+      <div className={styles.scrollContainer}>
         <div
-          className={styles.card}
+          className={`${styles.card} ${styles.addCard}`}
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -92,7 +91,7 @@ export const ThemesPage: FC = () => {
             </div>
           </div>
         ))}
-      </Carousel>
+      </div>
       <div className={styles.divider} />
       {!isAddingTopic ? (
         <div className={styles.tasksCarousel}>
