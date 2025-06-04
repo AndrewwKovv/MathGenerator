@@ -16,7 +16,12 @@ import {
 } from 'store/student';
 import { MathText } from 'shared/components';
 import { type ITask } from 'config';
-import { getGeneratedTaskIdByHash, submitTaskAnswers, uploadImage, getImagesByHash } from 'shared/api/optionApi';
+import {
+  getGeneratedTaskIdByHash,
+  submitTaskAnswers,
+  uploadImage,
+  getImagesByHash
+} from 'shared/api/optionApi';
 import { TASKS } from './constants';
 import styles from './option.module.scss';
 
@@ -28,39 +33,46 @@ export const Option: FC = () => {
 
   const [generatedTaskId, setGeneratedTaskId] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [userHashLocal, setUserHashLocal] = useState<string>(userHash ?? '');
 
   // Инициализация пустых ответов
   useEffect(() => {
     const initialAnswers: Record<string, string> = {};
     tasks?.forEach(({ id, amount }) => {
       for (let i = 0; i < amount; i++) {
-        const key = `${id}-${i}`; // Уникальный ключ для каждого задания и варианта
+        const key = `${id}-${i}`;
         initialAnswers[key] = '';
       }
     });
     setAnswers(initialAnswers);
   }, [tasks]);
 
-  // Получение generatedTaskId по hash
+  // Получение информации о варианте по hash
   useEffect(() => {
-    const fetchGeneratedTaskId = async () => {
+    const fetchGeneratedTaskInfo = async () => {
       if (!hash) return;
       try {
-        const id = await getGeneratedTaskIdByHash(hash);
-        if (id) {
-          setGeneratedTaskId(id);
+        const data = await getGeneratedTaskIdByHash(hash);
+        if (data?.id) {
+          setGeneratedTaskId(data.id);
+
+          const isStudent = true; // при необходимости — проверь через auth
+          const isCreator = data.creator?.full_name === name;
+
+          if (isStudent && isCreator && data.training_key) {
+            setUserHashLocal(userHash + data.training_key);
+          }
         } else {
           console.error('Вариант с указанным hash не найден.');
         }
       } catch (error) {
-        console.error('Ошибка при получении ID варианта:', error);
+        console.error('Ошибка при получении информации о варианте:', error);
       }
     };
 
-    void fetchGeneratedTaskId();
-  }, [hash]);
+    void fetchGeneratedTaskInfo();
+  }, [hash, userHash, name]);
 
   // Получение загруженных изображений
   useEffect(() => {
@@ -95,9 +107,8 @@ export const Option: FC = () => {
       return;
     }
 
-    // Преобразуем ответы: если ответ пустой, добавляем дефолтное значение "-"
     const taskAnswers = Object.entries(answers).map(([uniqueKey, answerText]) => {
-      const [taskId] = uniqueKey.split('-'); // Извлекаем taskId из ключа
+      const [taskId] = uniqueKey.split('-');
       return {
         taskId: Number(taskId),
         answerText: answerText.trim() || '-'
@@ -135,7 +146,7 @@ export const Option: FC = () => {
       console.error('Ошибка при загрузке файла:', error);
       void message.error(`Ошибка при загрузке ${file.name}`);
     }
-    return false; // чтобы antd не загружал автоматически
+    return false;
   };
 
   return (
@@ -160,7 +171,7 @@ export const Option: FC = () => {
                     <MathText type="secondary">{task.name}</MathText>
                     <div className={styles.taskList}>
                       <BlockMath>
-                        {Parser.parse(task.template, userHash, index * 10 + taskIndex)}
+                        {Parser.parse(task.template, userHashLocal, index * 10 + taskIndex)}
                       </BlockMath>
                       <Input
                         className={styles.answerInput}
