@@ -1,7 +1,7 @@
 {
   "name": "app",
   "version": "0.1.0",
-  "homepage": "MathGenerator",
+  "homepage": "https://your-frontend-6bxw.onrender.com",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
