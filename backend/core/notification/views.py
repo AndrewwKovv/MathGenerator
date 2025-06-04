@@ -2,15 +2,17 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Notification
-from .serializers import NotificationSerializer
-from authentication.models import User
-from group.models import Group
+from .models import Notification, Log
+from .serializers import NotificationSerializer, LogSerializer
+from authentication.models import User, Group
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
 
     @action(detail=True, methods=['patch'], url_path='mark-as-read')
     def mark_as_read(self, request, pk=None):
@@ -56,3 +58,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
         Notification.objects.bulk_create(notifications)
 
         return Response({'status': 'Уведомления успешно отправлены'}, status=status.HTTP_201_CREATED)
+
+class LogViewSet(viewsets.ModelViewSet):
+    queryset = Log.objects.all()
+    serializer_class = LogSerializer
+    permission_classes = [IsAuthenticated]

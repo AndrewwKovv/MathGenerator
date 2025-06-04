@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=91rzz&req@(2n3^1zdl-ir34nc9vsps77y)*hq#wxdu!6-gzp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['drf-backend-1qa4.onrender.com']
-
+# ALLOWED_HOSTS = ['drf-backend-1qa4.onrender.com']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -44,13 +44,9 @@ INSTALLED_APPS = [
 
     'authentication',
     'answer',
-    'group',
     'generatedTask',
     'tasks',
-    'userState',
-    'logi',
     'notification',
-    'userTaskStatus',
     
 ]
 
@@ -67,6 +63,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://localhost:3000",
     'https://your-frontend.onrender.com',
 ]
 
@@ -106,7 +104,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myprojectdb',  
+        'USER': 'admin', 
+        'PASSWORD': 'mypassword',  
+        'HOST': 'localhost', 
+        'PORT': '5432', 
+    }
+    # 'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 

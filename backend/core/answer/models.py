@@ -19,19 +19,23 @@ class Answer(models.Model):
     generated_task = models.ForeignKey(
         'generatedTask.GeneratedTask',
         on_delete=models.CASCADE,
-        verbose_name='Вариант',
-        related_name='answers'
+        verbose_name='Контрольный вариант',
+        related_name='answers',
+        null=True,
+        blank=True
     )
     task_answers = JSONField(verbose_name='Ответы на задания', default=list)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', null=True, blank=True)
 
     # Дополнительные поля для хранения данных варианта
-    generated_task_hash = models.CharField(max_length=255, verbose_name='Hash варианта')
+    generated_task_hash = models.CharField(max_length=255, verbose_name='Hash варианта', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Копируем данные из связанного варианта
         if self.generated_task:
             self.generated_task_hash = self.generated_task.hash_code
+        elif self.training_task:
+            self.generated_task_hash = self.training_task.hash_code
         super().save(*args, **kwargs)
 
     def __str__(self):

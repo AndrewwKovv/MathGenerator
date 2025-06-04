@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Notification
+from .models import Notification, Log
 
 class NotificationSerializer(serializers.ModelSerializer):
     sender = serializers.StringRelatedField(read_only=True)  # Отображение отправителя
@@ -8,3 +8,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'sender', 'user', 'message', 'is_read', 'created_at']
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Log
+        fields = ['id', 'user', 'action', 'timestamp']

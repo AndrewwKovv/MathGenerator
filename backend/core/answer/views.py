@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import NotFound
 
 from tasks.models import Task
 from generatedTask.models import GeneratedTask
@@ -86,3 +87,36 @@ class AnswerViewSet(viewsets.ModelViewSet):
             )
     
         return Response({'message': 'Решение успешно отправлено', 'answer_id': answer.id}, status=status.HTTP_201_CREATED)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='solution-by-hash',
+        permission_classes=[AllowAny],
+    )
+    def get_solution_by_hash(self, request):
+        hash_code = request.query_params.get('hash_code')
+        user_id = request.query_params.get('user_id')
+
+        if not hash_code or not user_id:
+            return Response(
+                {'error': 'Параметры hash_code и user_id обязательны'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            generated_tasks = GeneratedTask.objects.filter(hash_code=hash_code)
+            if not generated_tasks.exists():
+                raise NotFound('Вариант с указанным hash_code не найден')
+
+            answer = Answer.objects.filter(generated_task__in=generated_tasks, user_id=user_id).first()
+            if not answer:
+                raise NotFound('Решение для указанного пользователя не найдено')
+
+            serializer = AnswerSerializer(answer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except NotFound as nf:
+            return Response({'error': str(nf)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': f'Ошибка сервера: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
